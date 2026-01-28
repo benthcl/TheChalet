@@ -6,12 +6,15 @@ let unsubStatus = null;
 let unsubIssues = null;
 
 export function initHome(user) {
-    const name = user.email.split('@')[0];
+    // OLD: const name = user.email.split('@')[0];
+    
+    // NEW: Clean Welcome Logic
+    // Just say "Welcome Home" to keep it clean and professional.
     const welcomeEl = document.getElementById('welcome-title');
-    if(welcomeEl) welcomeEl.textContent = `Welcome home, ${name.charAt(0).toUpperCase() + name.slice(1)}.`;
+    if(welcomeEl) welcomeEl.textContent = "Welcome Home.";
 
     startTripListener();
-    startStatusListener(); // <--- This is the one we are fixing
+    startStatusListener();
     startIssuesListener();
 }
 

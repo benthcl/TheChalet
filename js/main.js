@@ -72,3 +72,43 @@ document.querySelectorAll('.nav-link').forEach(link => {
         }
     });
 });
+
+// Add this helper to close navbar on click
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    const navCollapse = document.getElementById('navbarNav');
+    const bsCollapse = new bootstrap.Collapse(navCollapse, {toggle: false});
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (navCollapse.classList.contains('show')) {
+                bsCollapse.hide();
+            }
+        });
+    });
+    
+    // Also close if clicking outside
+    document.addEventListener('click', (e) => {
+        if (!navCollapse.contains(e.target) && navCollapse.classList.contains('show')) {
+            bsCollapse.hide();
+        }
+    });
+});
+
+// --- LIGHTBOX LOGIC ---
+window.openLightbox = (src, caption) => {
+    const lightbox = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    const cap = document.getElementById('lightbox-caption');
+    
+    if(lightbox && img) {
+        img.src = src;
+        if(cap) cap.textContent = caption || "";
+        lightbox.classList.add('active');
+    }
+};
+
+window.closeLightbox = () => {
+    const lightbox = document.getElementById('lightbox');
+    if(lightbox) lightbox.classList.remove('active');
+};

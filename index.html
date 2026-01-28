@@ -41,6 +41,7 @@
                         <li class="nav-item"><a class="nav-link fw-bold" href="#" data-section="issues">Board</a></li>
                         <li class="nav-item"><a class="nav-link fw-bold" href="#" data-section="calendar">Calendar</a></li>
                         <li class="nav-item"><a class="nav-link fw-bold" href="#" data-section="stock">Stockroom</a></li>
+                        <li class="nav-item"><a class="nav-link fw-bold" href="#" data-section="gallery">Gallery</a></li>
                         <li class="nav-item d-none d-lg-block text-secondary small" id="user-display-email"></li>
                         <li class="nav-item"><button id="logout-button" class="btn btn-outline-dark rounded-pill px-4 btn-sm">Logout</button></li>
                     </ul>
@@ -65,16 +66,11 @@
 
                     <h5 class="fw-bold text-secondary mb-3 px-2">At a Glance</h5>
                     <div class="row g-4 mb-5">
-                        
                         <div class="col-md-6 col-lg-4">
                             <div class="card h-100 glass-panel border-0 cursor-pointer p-2 rounded-5" onclick="document.querySelector('[data-section=\'calendar\']').click()">
                                 <div class="card-body p-4">
-                                    <div class="widget-icon-box widget-trip">
-                                        <i class="bi bi-calendar-event-fill"></i>
-                                    </div>
-                                    <div id="widget-next-trip">
-                                        <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
-                                    </div>
+                                    <div class="widget-icon-box widget-trip"><i class="bi bi-calendar-event-fill"></i></div>
+                                    <div id="widget-next-trip"><div class="spinner-border spinner-border-sm text-secondary" role="status"></div></div>
                                 </div>
                             </div>
                         </div>
@@ -82,12 +78,8 @@
                         <div class="col-md-6 col-lg-4">
                             <div class="card h-100 glass-panel border-0 cursor-pointer p-2 rounded-5" onclick="document.querySelector('[data-section=\'stock\']').click()">
                                 <div class="card-body p-4">
-                                    <div class="widget-icon-box widget-stock">
-                                        <i class="bi bi-box-seam-fill"></i>
-                                    </div>
-                                    <div id="widget-status">
-                                        <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
-                                    </div>
+                                    <div class="widget-icon-box widget-stock"><i class="bi bi-box-seam-fill"></i></div>
+                                    <div id="widget-status"><div class="spinner-border spinner-border-sm text-secondary" role="status"></div></div>
                                 </div>
                             </div>
                         </div>
@@ -95,12 +87,8 @@
                         <div class="col-md-6 col-lg-4">
                             <div class="card h-100 glass-panel border-0 cursor-pointer p-2 rounded-5" onclick="document.querySelector('[data-section=\'issues\']').click()">
                                 <div class="card-body p-4">
-                                    <div class="widget-icon-box widget-issue">
-                                        <i class="bi bi-tools"></i>
-                                    </div>
-                                    <div id="widget-issues">
-                                        <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
-                                    </div>
+                                    <div class="widget-icon-box widget-issue"><i class="bi bi-tools"></i></div>
+                                    <div id="widget-issues"><div class="spinner-border spinner-border-sm text-secondary" role="status"></div></div>
                                 </div>
                             </div>
                         </div>
@@ -114,7 +102,6 @@
                                         <div class="bg-success bg-opacity-10 text-success rounded-circle p-2"><i class="bi bi-wifi fs-4"></i></div>
                                         <h4 class="fw-bold m-0">WiFi & Access</h4>
                                     </div>
-                                    
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <div class="bg-white bg-opacity-50 rounded-4 p-3 border border-white">
@@ -138,21 +125,15 @@
 
                         <div class="col-lg-4">
                             <div class="card shadow-sm border-0 h-100 rounded-5 overflow-hidden text-white" style="position: relative;">
-                                
                                 <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: url('photos/chalet2.jpg') center/cover;"></div>
-                                
                                 <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);"></div>
-                                
                                 <div class="card-body p-4 d-flex flex-column justify-content-end" style="position: relative; z-index: 2;">
-                                    
                                     <div class="bg-white rounded-circle d-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 48px; height: 48px;">
                                         <i class="bi bi-images fs-5 text-dark"></i>
                                     </div>
-                                    
                                     <h3 class="fw-bold mb-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Family Gallery</h3>
                                     <p class="small opacity-75 mb-3">Relive the best moments from past trips.</p>
-                                    
-                                    <button class="btn btn-white text-dark rounded-pill fw-bold w-100" onclick="alert('Gallery coming next!')">Open Gallery</button>
+                                    <button class="btn btn-white text-dark rounded-pill fw-bold w-100" onclick="document.querySelector('[data-section=\'gallery\']').click()">Open Gallery</button>
                                 </div>
                             </div>
                         </div>
@@ -183,7 +164,6 @@
                             <h2 class="fw-bold m-0">The Stockroom</h2>
                             <p class="text-secondary m-0 small">Update status and sign-off before leaving.</p>
                         </div>
-                        
                         <button id="btn-publish-report" onclick="window.publishHandover()" class="btn btn-dark rounded-pill px-4 py-2 shadow-sm" disabled>
                             <i class="bi bi-file-earmark-check me-2"></i>Sign-Off & Publish Report
                         </button>
@@ -195,7 +175,6 @@
                     </div>
 
                     <div class="row g-4 mb-5">
-                        
                         <div class="col-md-6">
                             <div class="card h-100 shadow-sm glass-panel border-0">
                                 <div class="card-body p-4">
@@ -203,12 +182,10 @@
                                         <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary"><i class="bi bi-basket-fill fs-4"></i></div>
                                         <h4 class="fw-bold m-0">Laundry</h4>
                                     </div>
-                                    
                                     <div class="form-check form-switch mb-3">
                                         <input class="form-check-input" type="checkbox" id="laundryToggle" style="width: 3em; height: 1.5em;" disabled>
                                         <label class="form-check-label ms-2 fw-bold pt-1" for="laundryToggle">Dirty Laundry Left?</label>
                                     </div>
-
                                     <div id="laundryLocationBox" class="d-none">
                                         <label class="small text-secondary fw-bold mb-1">WHERE IS IT?</label>
                                         <input type="text" id="laundryLocation" onchange="window.saveLaundry()" class="form-control bg-light border-0 rounded-4 p-3" placeholder="e.g. Blue bag in the hallway..." disabled>
@@ -227,7 +204,6 @@
                                         <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success"><i class="bi bi-cup-hot-fill fs-4"></i></div>
                                         <h4 class="fw-bold m-0">Arrival Basics</h4>
                                     </div>
-
                                     <div class="d-flex gap-2 mb-3">
                                         <button onclick="window.togglePantry('tea')" id="btn-tea" class="btn btn-light flex-grow-1 py-2 rounded-4 border-0 shadow-sm text-secondary" disabled>
                                             <i class="bi bi-cup-hot me-1"></i> Tea/Coffee
@@ -236,7 +212,6 @@
                                             <i class="bi bi-egg-fried me-1"></i> 1 Meal
                                         </button>
                                     </div>
-
                                     <label class="small text-secondary fw-bold mb-1">FOOD DETAILS</label>
                                     <textarea id="pantryDetails" onblur="window.savePantry()" class="form-control bg-light border-0 rounded-4 p-3 small" rows="2" placeholder="e.g. 500g Pasta, Tomato Sauce, 1L Milk..." disabled></textarea>
                                 </div>
@@ -247,8 +222,7 @@
                             <div class="card shadow-sm glass-panel border-0">
                                 <div class="card-body p-4">
                                     <h5 class="fw-bold mb-4">Household Essentials</h5>
-                                    <div class="row g-3" id="essentials-grid">
-                                        </div>
+                                    <div class="row g-3" id="essentials-grid"></div>
                                 </div>
                             </div>
                         </div>
@@ -259,17 +233,120 @@
                         <button id="scrollLeftBtn" class="scroll-btn left hidden" onclick="window.scrollStream(-1)">
                             <i class="bi bi-chevron-left text-dark"></i>
                         </button>
-
-                        <div id="handover-list" class="card-stream-container">
-                            </div>
-
+                        <div id="handover-list" class="card-stream-container"></div>
                         <button id="scrollRightBtn" class="scroll-btn right" onclick="window.scrollStream(1)">
                             <i class="bi bi-chevron-right text-dark"></i>
                         </button>
                     </div>
                 </section>
-            </div>
-        </main>
+
+                <section id="gallery-section" class="dashboard-section d-none fade-in">
+                    <div class="glass-panel p-4 rounded-5 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div>
+                            <h2 class="fw-bold m-0">Family Moments</h2>
+                            <p class="text-secondary m-0 small">The best memories from the mountains.</p>
+                        </div>
+                        <a href="https://www.dropbox.com/" target="_blank" class="btn btn-premium rounded-pill px-4">
+                            <i class="bi bi-cloud-arrow-down-fill me-2"></i>Full Archive
+                        </a>
+                    </div>
+
+                    <div class="gallery-grid">
+                        
+                        <div class="gallery-item" onclick="openLightbox('photos/IMG_1047.jpg', '')">
+                            <img src="photos/IMG_1047.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/Sue+Alex.jpg', '')">
+                            <img src="photos/Sue+Alex.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/Cheers.jpg', '')">
+                            <img src="photos/Cheers.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/DSC01510.jpg', '')">
+                            <img src="photos/DSC01510.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/5_boys_on_sofa.jpg', '')">
+                            <img src="photos/5_boys_on_sofa.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/IMG_6524.jpg', '')">
+                            <img src="photos/IMG_6524.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/P7260028.jpg', '')">
+                            <img src="photos/P7260028.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/IMG_3386.jpg', '')">
+                            <img src="photos/IMG_3386.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/2_little_monkeys.jpg', '')">
+                            <img src="photos/2_little_monkeys.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/Xmas3.jpg', '')">
+                            <img src="photos/Xmas3.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/DSC01992.jpg', '')">
+                            <img src="photos/DSC01992.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/P4070399.jpg', '')">
+                            <img src="photos/P4070399.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/IMG_3560.jpg', '')">
+                            <img src="photos/IMG_3560.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/11A_0015.jpg', '')">
+                            <img src="photos/11A_0015.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/Picnic3.jpg', '')">
+                            <img src="photos/Picnic3.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/P1020435.jpg', '')">
+                            <img src="photos/P1020435.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/IMG_6538.jpg', '')">
+                            <img src="photos/IMG_6538.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                        <div class="gallery-item" onclick="openLightbox('photos/DSC02026.jpg', '')">
+                            <img src="photos/DSC02026.jpg" alt="Gallery Photo" loading="lazy">
+                            <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div> </main>
     </div>
 
     <div class="modal fade" id="addTripModal" tabindex="-1" aria-hidden="true">
@@ -328,6 +405,12 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="lightbox" class="lightbox-modal" onclick="closeLightbox()">
+        <button class="lightbox-close"><i class="bi bi-x-lg"></i></button>
+        <img id="lightbox-img" src="" alt="">
+        <div id="lightbox-caption" class="lightbox-caption-text"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
