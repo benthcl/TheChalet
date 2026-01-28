@@ -1,0 +1,118 @@
+:root {
+    --chalet-pine-green: #2F4F4F; /* Dark Slate Grey, like deep pine */
+    --chalet-forest-green: #355E3B; /* Forest Green */
+    --chalet-slate-grey: #708090; /* Light Slate Grey */
+    --chalet-wood-light: #F5DEB3; /* Wheat, light wood tone */
+    --chalet-wood-dark: #8B4513; /* Saddle Brown, dark wood tone */
+    --chalet-cream: #F5F5DC; /* Beige, warm cream */
+    --chalet-snow-white: #FFFFFF; /* Pure white */
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--chalet-cream); /* Cozy, light background */
+    color: var(--chalet-pine-green);
+}
+
+.chalet-bg-light {
+    background-color: var(--chalet-cream);
+}
+
+.chalet-navbar-bg {
+    background-color: var(--chalet-pine-green) !important; /* Deep pine green for navbar */
+}
+
+.chalet-card-bg {
+    background-color: var(--chalet-snow-white); /* White card background */
+    border: 1px solid var(--chalet-slate-grey);
+    border-radius: 0.75rem; /* Rounded corners */
+}
+
+.chalet-text-dark {
+    color: var(--chalet-pine-green);
+}
+
+.chalet-text-light {
+    color: var(--chalet-snow-white);
+}
+
+.chalet-nav-link {
+    color: var(--chalet-snow-white) !important;
+    transition: color 0.3s ease-in-out;
+}
+
+.chalet-nav-link:hover,
+.chalet-nav-link.active {
+    color: var(--chalet-wood-light) !important; /* Lighter hover for contrast */
+}
+
+.chalet-btn-primary {
+    background-color: var(--chalet-forest-green);
+    border-color: var(--chalet-forest-green);
+    color: var(--chalet-snow-white);
+    transition: background-color 0.3s ease;
+}
+
+.chalet-btn-primary:hover {
+    background-color: var(--chalet-wood-dark); /* Darker wood tone on hover */
+    border-color: var(--chalet-wood-dark);
+}
+
+.chalet-btn-secondary {
+    background-color: var(--chalet-slate-grey);
+    border-color: var(--chalet-slate-grey);
+    color: var(--chalet-snow-white);
+    transition: background-color 0.3s ease;
+}
+
+.chalet-btn-secondary:hover {
+    background-color: var(--chalet-pine-green);
+    border-color: var(--chalet-pine-green);
+}
+
+/* Specific styling for list items in Maintenance Log */
+.list-group-item {
+    background-color: var(--chalet-snow-white);
+    border-color: var(--chalet-slate-grey);
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.list-group-item h5 {
+    color: var(--chalet-forest-green);
+}
+
+.list-group-item small {
+    color: var(--chalet-slate-grey);
+}
+
+.form-control, .form-select {
+    border-color: var(--chalet-slate-grey);
+}
+
+/* Ensure login screen takes full height initially */
+#login-screen {
+    background-color: var(--chalet-cream);
+    display: flex; /* Ensure it's a flex container */
+}
+
+/* Ensure dashboard takes full height when visible */
+#dashboard {
+    display: flex; /* Ensure it's a flex container */
+    flex-direction: column;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    .navbar-nav .nav-link {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    .card {
+        padding: 1.5rem !important;
+    }
+}
