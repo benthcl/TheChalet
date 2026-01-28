@@ -1,8 +1,11 @@
+import { initHome } from './home.js';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { auth } from './config.js';
 import { initIssues, cleanupIssues } from './issues.js';
 import { initCalendar, cleanupCalendar, refreshCalendar } from './calendar.js';
 import { initStock, cleanupStock } from './stock.js';
+
+
 
 // DOM ELEMENTS
 const loginScreen = document.getElementById('login-screen');
@@ -17,10 +20,11 @@ onAuthStateChanged(auth, (user) => {
         const userDisplay = document.getElementById('user-display-email');
         if(userDisplay) userDisplay.textContent = user.email;
         
-        // Initialize Modules
+        // ... inside the if(user) block ...
         initIssues(user);
         initCalendar(user);
-        initStock(user); // <--- ✅ ADD (user) HERE
+        initStock(user);
+        initHome(user); // <--- Add this line
         
     } else {
         // LOGGED OUT

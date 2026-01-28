@@ -51,14 +51,110 @@
         <main class="flex-grow-1 p-3 p-md-5">
             <div class="container-xl">
                 
-                <section id="home-section" class="dashboard-section active fade-in text-center py-5">
-                    <div class="glass-panel p-5 rounded-5 d-inline-block mx-auto" style="max-width: 800px;">
-                        <span class="badge bg-success bg-opacity-10 text-success mb-3 px-3 py-2 rounded-pill">FAMILY PORTAL</span>
-                        <h1 class="display-3 fw-bold mb-3">Welcome Home.</h1>
-                        <p class="lead text-secondary mb-5">Manage the chalet, track repairs, and plan your next trip.</p>
-                        <div class="d-flex gap-3 justify-content-center">
-                            <button class="btn btn-premium btn-lg px-4" onclick="document.querySelector('[data-section=\'issues\']').click()">Issues Board</button>
-                            <button class="btn btn-outline-dark btn-lg px-4 rounded-pill" onclick="document.querySelector('[data-section=\'calendar\']').click()">View Calendar</button>
+                <section id="home-section" class="dashboard-section active fade-in py-2">
+                    <div class="hero-banner mb-5">
+                        <div class="hero-bg-img"></div>
+                        <div class="hero-content p-5">
+                            <span class="badge bg-white bg-opacity-25 text-white border border-white border-opacity-50 rounded-pill px-3 py-2 mb-3 backdrop-blur">
+                                <i class="bi bi-house-heart-fill me-2"></i>FAMILY PORTAL
+                            </span>
+                            <h1 class="display-4 fw-bold mb-2" id="welcome-title">Welcome Home.</h1>
+                            <p class="lead opacity-75" style="max-width: 500px;">Check the house status, plan your next trip, or report an issue. The mountains are calling.</p>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-secondary mb-3 px-2">At a Glance</h5>
+                    <div class="row g-4 mb-5">
+                        
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 glass-panel border-0 cursor-pointer p-2 rounded-5" onclick="document.querySelector('[data-section=\'calendar\']').click()">
+                                <div class="card-body p-4">
+                                    <div class="widget-icon-box widget-trip">
+                                        <i class="bi bi-calendar-event-fill"></i>
+                                    </div>
+                                    <div id="widget-next-trip">
+                                        <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 glass-panel border-0 cursor-pointer p-2 rounded-5" onclick="document.querySelector('[data-section=\'stock\']').click()">
+                                <div class="card-body p-4">
+                                    <div class="widget-icon-box widget-stock">
+                                        <i class="bi bi-box-seam-fill"></i>
+                                    </div>
+                                    <div id="widget-status">
+                                        <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 glass-panel border-0 cursor-pointer p-2 rounded-5" onclick="document.querySelector('[data-section=\'issues\']').click()">
+                                <div class="card-body p-4">
+                                    <div class="widget-icon-box widget-issue">
+                                        <i class="bi bi-tools"></i>
+                                    </div>
+                                    <div id="widget-issues">
+                                        <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <div class="card glass-panel border-0 h-100 rounded-5 p-2">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center gap-3 mb-4">
+                                        <div class="bg-success bg-opacity-10 text-success rounded-circle p-2"><i class="bi bi-wifi fs-4"></i></div>
+                                        <h4 class="fw-bold m-0">WiFi & Access</h4>
+                                    </div>
+                                    
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="bg-white bg-opacity-50 rounded-4 p-3 border border-white">
+                                                <div class="small fw-bold text-secondary mb-1">NETWORK</div>
+                                                <div class="fs-5 fw-bold text-dark">Chalet_Guest_5G</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="bg-white bg-opacity-50 rounded-4 p-3 border border-white d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <div class="small fw-bold text-secondary mb-1">PASSWORD</div>
+                                                    <div class="fs-5 fw-bold font-monospace text-dark">Mountains2024!</div>
+                                                </div>
+                                                <button class="btn btn-white shadow-sm rounded-circle" onclick="navigator.clipboard.writeText('Mountains2024!')"><i class="bi bi-clipboard"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card shadow-sm border-0 h-100 rounded-5 overflow-hidden text-white" style="position: relative;">
+                                
+                                <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: url('photos/chalet2.jpg') center/cover;"></div>
+                                
+                                <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);"></div>
+                                
+                                <div class="card-body p-4 d-flex flex-column justify-content-end" style="position: relative; z-index: 2;">
+                                    
+                                    <div class="bg-white rounded-circle d-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 48px; height: 48px;">
+                                        <i class="bi bi-images fs-5 text-dark"></i>
+                                    </div>
+                                    
+                                    <h3 class="fw-bold mb-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Family Gallery</h3>
+                                    <p class="small opacity-75 mb-3">Relive the best moments from past trips.</p>
+                                    
+                                    <button class="btn btn-white text-dark rounded-pill fw-bold w-100" onclick="alert('Gallery coming next!')">Open Gallery</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
