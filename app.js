@@ -1,9 +1,14 @@
-// Firebase SDKs - Using ES modules via CDN
+// --- IMPORTS (Must be at the top) ---
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-// Your Firebase Config
+// --- CONFIGURATION ---
+// ⚠️ ADMIN LIST: Add the emails of the 3 Chiefs here!
+const ADMIN_EMAILS = [
+    "thomasclubbben@gmail.com"
+];
+
 const firebaseConfig = {
   apiKey: "AIzaSyAiYXGjF9KB2Fd4qvdjjG4vWekLvbmsAik",
   authDomain: "the-chalet-e4581.firebaseapp.com",
@@ -13,192 +18,209 @@ const firebaseConfig = {
   appId: "1:139085912060:web:51836f6ba88f32aed6c479"
 };
 
-// Initialize Firebase
+// --- INITIALIZE ---
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// --- DOM Elements ---
+// --- DOM ELEMENTS ---
 const loginScreen = document.getElementById('login-screen');
 const dashboard = document.getElementById('dashboard');
 const loginForm = document.getElementById('login-form');
-const loginEmailInput = document.getElementById('loginEmail');
-const loginPasswordInput = document.getElementById('loginPassword');
-const loginErrorMessage = document.getElementById('login-error-message');
-const logoutButton = document.getElementById('logout-button');
-const userDisplayEmail = document.getElementById('user-display-email');
 
-const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-const dashboardSections = document.querySelectorAll('.dashboard-section');
-
-const complaintForm = document.getElementById('complaint-form');
-const complaintTitleInput = document.getElementById('complaintTitle');
-const complaintCategorySelect = document.getElementById('complaintCategory');
-const complaintDescriptionTextarea = document.getElementById('complaintDescription');
-const complaintMessageDiv = document.getElementById('complaint-message');
-
-const complaintsList = document.getElementById('complaints-list');
-const noComplaintsMessage = document.getElementById('no-complaints-message');
-
-// --- Authentication State Management ---
+// --- AUTHENTICATION LISTENER ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // User is signed in
-        loginScreen.classList.add('d-none'); // Hide login
-        dashboard.classList.remove('d-none'); // Show dashboard
-        userDisplayEmail.textContent = `Logged in as: ${user.email}`;
-
-        // Ensure Home section is active by default after login
-        showSection('home-section');
-        navLinks.forEach(link => link.classList.remove('active'));
-        document.querySelector('[data-section="home"]').classList.add('active');
-
-        loadComplaints(); // Load complaints when user logs in
+        // User logged in
+        loginScreen.classList.add('d-none');
+        dashboard.classList.remove('d-none');
+        document.getElementById('user-display-email').textContent = user.email;
+        
+        // Start listening for issues immediately
+        loadComplaints(user); 
     } else {
-        // User is signed out
-        loginScreen.classList.remove('d-none'); // Show login
-        dashboard.classList.add('d-none'); // Hide dashboard
-        userDisplayEmail.textContent = '';
-        complaintsList.innerHTML = ''; // Clear complaints
-        noComplaintsMessage.classList.remove('d-none'); // Show no complaints message
+        // User logged out
+        loginScreen.classList.remove('d-none');
+        dashboard.classList.add('d-none');
     }
 });
 
-// --- Login Functionality ---
+// --- LOGIN SUBMIT ---
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = loginEmailInput.value;
-    const password = loginPasswordInput.value;
-    loginErrorMessage.classList.add('d-none'); // Hide previous error
-
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
     try {
         await signInWithEmailAndPassword(auth, email, password);
-        // UI update handled by onAuthStateChanged
     } catch (error) {
-        let message = 'An unknown error occurred.';
-        switch (error.code) {
-            case 'auth/invalid-email':
-                message = 'Invalid email address format.';
-                break;
-            case 'auth/user-disabled':
-                message = 'Your account has been disabled.';
-                break;
-            case 'auth/user-not-found':
-            case 'auth/wrong-password': // This is a security measure, typically not distinguishing
-                message = 'Invalid email or password.';
-                break;
-            case 'auth/too-many-requests':
-                message = 'Too many failed login attempts. Please try again later.';
-                break;
-            default:
-                message = error.message;
-        }
-        loginErrorMessage.textContent = message;
-        loginErrorMessage.classList.remove('d-none');
+        const errorMsg = document.getElementById('login-error-message');
+        errorMsg.textContent = "Login failed: " + error.message;
+        errorMsg.classList.remove('d-none');
     }
 });
 
-// --- Logout Functionality ---
-logoutButton.addEventListener('click', async () => {
-    try {
-        await signOut(auth);
-        // UI update handled by onAuthStateChanged
-    } catch (error) {
-        console.error('Error signing out:', error);
-        alert('Failed to log out. Please try again.');
-    }
+// --- LOGOUT ---
+document.getElementById('logout-button').addEventListener('click', () => {
+    signOut(auth);
 });
 
-// --- Navigation Functionality ---
-navLinks.forEach(link => {
+// --- NAVIGATION (TABS) ---
+document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
-        navLinks.forEach(nav => nav.classList.remove('active'));
+        // 1. Remove active class from all links
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+        // 2. Add active class to clicked link
         link.classList.add('active');
-        const targetSection = link.dataset.section + '-section';
-        showSection(targetSection);
+        
+        // 3. Hide all sections
+        document.querySelectorAll('.dashboard-section').forEach(s => s.classList.add('d-none'));
+        // 4. Show target section
+        const targetId = link.dataset.section + '-section';
+        document.getElementById(targetId).classList.remove('d-none');
     });
 });
 
-function showSection(sectionId) {
-    dashboardSections.forEach(section => {
-        if (section.id === sectionId) {
-            section.classList.remove('d-none');
-        } else {
-            section.classList.add('d-none');
-        }
-    });
-}
-
-// --- Report Issue Form Submission ---
-complaintForm.addEventListener('submit', async (e) => {
+// --- SUBMIT NEW ISSUE (MODAL) ---
+document.getElementById('complaint-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!auth.currentUser) return;
 
-    const user = auth.currentUser;
-    if (!user) {
-        complaintMessageDiv.className = 'mt-3 text-danger';
-        complaintMessageDiv.textContent = 'You must be logged in to report an issue.';
-        return;
-    }
-
-    const title = complaintTitleInput.value;
-    const category = complaintCategorySelect.value;
-    const description = complaintDescriptionTextarea.value;
-    const userEmail = user.email;
+    const title = document.getElementById('complaintTitle').value;
+    const category = document.getElementById('complaintCategory').value;
+    const description = document.getElementById('complaintDescription').value;
+    const isAnonymous = document.getElementById('anonymousCheck').checked;
 
     try {
         await addDoc(collection(db, 'complaints'), {
-            title,
-            category,
+            title, 
+            category, 
             description,
-            status: 'pending',
-            timestamp: serverTimestamp(), // Use server timestamp for consistency
-            userEmail
+            isAnonymous,
+            status: 'pending', // Always starts as pending
+            timestamp: serverTimestamp(),
+            userEmail: auth.currentUser.email
         });
 
-        complaintMessageDiv.className = 'mt-3 text-success';
-        complaintMessageDiv.textContent = 'Issue reported successfully!';
-        complaintForm.reset(); // Clear the form
+        // Close Modal & Reset Form
+        const modalEl = document.getElementById('addIssueModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        modalInstance.hide();
+        document.getElementById('complaint-form').reset();
+
+        // Show Success Alert
+        const alertBox = document.getElementById('success-alert');
+        alertBox.classList.remove('d-none');
+        alertBox.classList.add('d-flex');
+        setTimeout(() => {
+            alertBox.classList.add('d-none');
+            alertBox.classList.remove('d-flex');
+        }, 3000);
+
     } catch (error) {
-        console.error('Error adding document: ', error);
-        complaintMessageDiv.className = 'mt-3 text-danger';
-        complaintMessageDiv.textContent = 'Failed to report issue. Please try again.';
+        alert("Error: " + error.message);
     }
 });
 
-// --- Maintenance Log (Firestore Real-time Updates) ---
-function loadComplaints() {
-    const q = query(collection(db, 'complaints'), orderBy('timestamp', 'desc')); // Order by newest first
+// --- THE CORE LOGIC: DISPLAYING ISSUES ---
+function loadComplaints(currentUser) {
+    const q = query(collection(db, 'complaints'), orderBy('timestamp', 'desc'));
 
     onSnapshot(q, (snapshot) => {
-        complaintsList.innerHTML = ''; // Clear current list
-        if (snapshot.empty) {
-            noComplaintsMessage.classList.remove('d-none');
-        } else {
-            noComplaintsMessage.classList.add('d-none');
-            snapshot.forEach((doc) => {
-                const complaint = doc.data();
-                const complaintId = doc.id;
-                const timestamp = complaint.timestamp ? new Date(complaint.timestamp.toDate()).toLocaleString() : 'N/A'; // Convert Firestore Timestamp to readable string
+        const listContainer = document.getElementById('complaints-list');
+        listContainer.innerHTML = ''; // Clear list to avoid duplicates
 
-                const complaintItem = `
-                    <div class="list-group-item chalet-card-bg">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1 chalet-text-dark">${complaint.title}</h5>
-                            <small class="text-muted">${timestamp}</small>
-                        </div>
-                        <p class="mb-1 chalet-text-dark"><strong>Category:</strong> ${complaint.category}</p>
-                        <p class="mb-1 chalet-text-dark"><strong>Status:</strong> <span class="badge ${complaint.status === 'pending' ? 'bg-warning text-dark' : 'bg-success'}">${complaint.status}</span></p>
-                        <p class="mb-1 chalet-text-dark">${complaint.description}</p>
-                        <small class="text-muted">Reported by: ${complaint.userEmail}</small>
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const issueId = doc.id;
+            const isAdmin = ADMIN_EMAILS.includes(currentUser.email);
+            const isAuthor = data.userEmail === currentUser.email;
+
+            // --- 1. VISIBILITY RULES (The Filter) ---
+            // Rule A: Everyone sees "approved"
+            // Rule B: Admins see EVERYTHING
+            // Rule C: Authors see their own "pending"
+            let isVisible = false;
+            
+            if (data.status === 'approved') isVisible = true;
+            else if (isAdmin) isVisible = true;
+            else if (isAuthor) isVisible = true;
+
+            // If not visible, skip this item entirely
+            if (!isVisible) return;
+
+            // --- 2. FORMATTING ---
+            const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : '...';
+            
+            // Handle Anonymity: 
+            // If Anonymous: Show "Anonymous" to public, but show Real Name to Admin
+            let displayAuthor = data.userEmail.split('@')[0];
+            if (data.isAnonymous) {
+                if (isAdmin || isAuthor) {
+                    displayAuthor = `Anonymous (${data.userEmail.split('@')[0]})`; // Admins see who it is
+                } else {
+                    displayAuthor = "Anonymous Member"; // Public sees this
+                }
+            }
+
+            const statusBadgeColor = data.status === 'pending' ? 'bg-warning text-dark' : 'bg-success text-white';
+
+            // --- 3. ADMIN BUTTONS ---
+            let adminControls = '';
+            if (isAdmin && data.status === 'pending') {
+                adminControls = `
+                    <div class="mt-3 pt-3 border-top">
+                        <button onclick="window.approveIssue('${issueId}')" class="btn btn-sm btn-success w-100 fw-bold shadow-sm">
+                            <i class="bi bi-check-lg"></i> Approve & Publish
+                        </button>
                     </div>
                 `;
-                complaintsList.innerHTML += complaintItem;
-            });
-        }
-    }, (error) => {
-        console.error("Error fetching complaints: ", error);
-        complaintsList.innerHTML = '<p class="text-danger">Failed to load complaints.</p>';
-        noComplaintsMessage.classList.add('d-none');
+            }
+
+            // --- 4. RENDER HTML ---
+            const cardHTML = `
+            <div class="col-md-6 col-lg-4 fade-in">
+                <div class="card issue-card h-100 border-0 shadow-sm rounded-4">
+                    <div class="photo-placeholder">
+                        <i class="bi bi-camera"></i>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-light text-dark border">${data.category}</span>
+                            <span class="badge ${statusBadgeColor} text-uppercase" style="font-size: 0.7rem; letter-spacing:1px;">${data.status}</span>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-2">${data.title}</h5>
+                        <p class="text-muted small mb-4 flex-grow-1">${data.description}</p>
+                        
+                        <div class="d-flex align-items-center">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2" style="width:32px; height:32px;">
+                                <i class="bi bi-person-fill text-secondary"></i>
+                            </div>
+                            <div class="small">
+                                <div class="fw-bold text-dark">${displayAuthor}</div>
+                                <div class="text-muted" style="font-size: 0.75rem">${dateStr}</div>
+                            </div>
+                        </div>
+                        ${adminControls}
+                    </div>
+                </div>
+            </div>`;
+            
+            listContainer.innerHTML += cardHTML;
+        });
     });
 }
+
+// --- GLOBAL APPROVE FUNCTION ---
+window.approveIssue = async (id) => {
+    if(!confirm("Are you sure you want to approve this issue? It will become visible to everyone.")) return;
+    
+    const issueRef = doc(db, "complaints", id);
+    try {
+        await updateDoc(issueRef, { status: "approved" });
+        // The list will auto-refresh because of onSnapshot
+    } catch (err) {
+        alert("Error approving: " + err.message);
+    }
+};

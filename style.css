@@ -1,118 +1,76 @@
+/* Modern Reset */
 :root {
-    --chalet-pine-green: #2F4F4F; /* Dark Slate Grey, like deep pine */
-    --chalet-forest-green: #355E3B; /* Forest Green */
-    --chalet-slate-grey: #708090; /* Light Slate Grey */
-    --chalet-wood-light: #F5DEB3; /* Wheat, light wood tone */
-    --chalet-wood-dark: #8B4513; /* Saddle Brown, dark wood tone */
-    --chalet-cream: #F5F5DC; /* Beige, warm cream */
-    --chalet-snow-white: #FFFFFF; /* Pure white */
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --accent: #198754; /* Alpine Green */
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--chalet-cream); /* Cozy, light background */
-    color: var(--chalet-pine-green);
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
 }
 
-.chalet-bg-light {
-    background-color: var(--chalet-cream);
+/* Navbar */
+.navbar-nav .nav-link {
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    padding: 8px 16px !important;
+    transition: all 0.2s;
 }
 
-.chalet-navbar-bg {
-    background-color: var(--chalet-pine-green) !important; /* Deep pine green for navbar */
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    background-color: rgba(0,0,0,0.05);
+    color: var(--text-primary);
 }
 
-.chalet-card-bg {
-    background-color: var(--chalet-snow-white); /* White card background */
-    border: 1px solid var(--chalet-slate-grey);
-    border-radius: 0.75rem; /* Rounded corners */
+/* Cards */
+.issue-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
 }
 
-.chalet-text-dark {
-    color: var(--chalet-pine-green);
+.issue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
 }
 
-.chalet-text-light {
-    color: var(--chalet-snow-white);
+/* Placeholder for Photos */
+.photo-placeholder {
+    height: 180px;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 3rem;
 }
 
-.chalet-nav-link {
-    color: var(--chalet-snow-white) !important;
-    transition: color 0.3s ease-in-out;
+/* Badges */
+.status-badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.status-pending { background-color: #fff7ed; color: #c2410c; }
+.status-approved { background-color: #f0fdf4; color: #15803d; }
+
+/* Utilities */
+.fade-in {
+    animation: fadeIn 0.4s ease-in;
 }
 
-.chalet-nav-link:hover,
-.chalet-nav-link.active {
-    color: var(--chalet-wood-light) !important; /* Lighter hover for contrast */
-}
-
-.chalet-btn-primary {
-    background-color: var(--chalet-forest-green);
-    border-color: var(--chalet-forest-green);
-    color: var(--chalet-snow-white);
-    transition: background-color 0.3s ease;
-}
-
-.chalet-btn-primary:hover {
-    background-color: var(--chalet-wood-dark); /* Darker wood tone on hover */
-    border-color: var(--chalet-wood-dark);
-}
-
-.chalet-btn-secondary {
-    background-color: var(--chalet-slate-grey);
-    border-color: var(--chalet-slate-grey);
-    color: var(--chalet-snow-white);
-    transition: background-color 0.3s ease;
-}
-
-.chalet-btn-secondary:hover {
-    background-color: var(--chalet-pine-green);
-    border-color: var(--chalet-pine-green);
-}
-
-/* Specific styling for list items in Maintenance Log */
-.list-group-item {
-    background-color: var(--chalet-snow-white);
-    border-color: var(--chalet-slate-grey);
-    margin-bottom: 0.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.list-group-item h5 {
-    color: var(--chalet-forest-green);
-}
-
-.list-group-item small {
-    color: var(--chalet-slate-grey);
-}
-
-.form-control, .form-select {
-    border-color: var(--chalet-slate-grey);
-}
-
-/* Ensure login screen takes full height initially */
-#login-screen {
-    background-color: var(--chalet-cream);
-    display: flex; /* Ensure it's a flex container */
-}
-
-/* Ensure dashboard takes full height when visible */
-#dashboard {
-    display: flex; /* Ensure it's a flex container */
-    flex-direction: column;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .navbar-brand {
-        font-size: 1.2rem;
-    }
-    .navbar-nav .nav-link {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-    .card {
-        padding: 1.5rem !important;
-    }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
