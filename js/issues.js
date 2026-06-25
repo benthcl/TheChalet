@@ -81,38 +81,91 @@ const complaintForm = document.getElementById('complaint-form');
 if(complaintForm) {
     complaintForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!auth.currentUser) return alert("Please log in.");
+        
+        // 1. Auth Check
+        if (!auth.currentUser) {
+            return Swal.fire({
+                title: 'Hold on!',
+                text: 'You need to be logged in to do that.',
+                icon: 'warning',
+                confirmButtonColor: '#1a1a1a',
+                customClass: { popup: 'glass-panel' }
+            });
+        }
         
         const submitBtn = complaintForm.querySelector('button[type="submit"]');
-        submitBtn.disabled = true; submitBtn.textContent = "Uploading...";
+        submitBtn.disabled = true; 
+        submitBtn.textContent = "Uploading...";
         
         const title = document.getElementById('complaintTitle').value;
         const cat = document.getElementById('complaintCategory').value;
         const desc = document.getElementById('complaintDescription').value;
         const anon = document.getElementById('anonymousCheck').checked;
-        const file = document.getElementById('complaintFile').files[0];
+        const originalFile = document.getElementById('complaintFile').files[0];
 
         try {
             let imageUrl = null;
-            if (file) {
-                const storageRef = ref(storage, 'issues/' + Date.now() + '-' + file.name);
-                await uploadBytes(storageRef, file);
+            let fileToUpload = originalFile;
+            
+            // 2. Image Compression Logic
+            if (originalFile) {
+                const compressionOptions = {
+                    maxSizeMB: 1, 
+                    maxWidthOrHeight: 1920,
+                    useWebWorker: true 
+                };
+                
+                try {
+                    fileToUpload = await imageCompression(originalFile, compressionOptions);
+                } catch (error) {
+                    console.error("Error compressing image:", error);
+                }
+            }
+
+            // 3. Upload to Firebase
+            if (fileToUpload) {
+                const storageRef = ref(storage, 'issues/' + Date.now() + '-' + fileToUpload.name);
+                await uploadBytes(storageRef, fileToUpload);
                 imageUrl = await getDownloadURL(storageRef);
             }
+            
             await addDoc(collection(db, 'complaints'), {
                 title, category: cat, description: desc, isAnonymous: anon,
                 imageUrl, votes: 0, votedBy: [], status: 'pending', timestamp: serverTimestamp(), userEmail: auth.currentUser.email
             });
+            
             if(window.bootstrap) bootstrap.Modal.getInstance(document.getElementById('addIssueModal'))?.hide();
             complaintForm.reset();
-            submitBtn.disabled = false; submitBtn.textContent = "Publish Report";
-        } catch (error) { alert("Error: " + error.message); submitBtn.disabled = false; }
+            submitBtn.disabled = false; 
+            submitBtn.textContent = "Publish Report";
+            
+        } catch (error) { 
+            // Swapped alert for SweetAlert
+            Swal.fire({
+                title: 'Upload Failed',
+                text: error.message,
+                icon: 'error',
+                confirmButtonColor: '#1a1a1a',
+                customClass: { popup: 'glass-panel' }
+            });
+            submitBtn.disabled = false; 
+            submitBtn.textContent = "Publish Report"; 
+        }
     });
 }
 
 // --- GLOBAL WINDOW FUNCTIONS ---
 window.toggleVote = async (id) => {
-    if (!auth.currentUser) return alert("Please log in.");
+    if (!auth.currentUser) {
+        return Swal.fire({
+            title: 'Hold on!',
+            text: 'You need to be logged in to vote.',
+            icon: 'warning',
+            confirmButtonColor: '#1a1a1a',
+            customClass: { popup: 'glass-panel' }
+        });
+    }
+    
     const issueRef = doc(db, "complaints", id);
     const issueSnap = await getDoc(issueRef);
     if (issueSnap.exists()) {

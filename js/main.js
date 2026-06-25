@@ -44,7 +44,20 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
     try { 
         await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); 
     } catch (error) { 
-        alert("Login Failed: " + error.message); 
+        // Change this:
+        // alert("Login Failed: " + error.message);
+
+        // To this:
+        Swal.fire({
+        title: 'Login Failed',
+        text: error.message,
+        icon: 'error',
+        confirmButtonColor: '#1a1a1a', 
+        confirmButtonText: 'Try Again',
+        customClass: {
+            popup: 'glass-panel' 
+        }
+        });
     }
 });
 
