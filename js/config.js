@@ -23,10 +23,15 @@ export const storage = getStorage(app);
  */
 const FAMILY_NAME_MAP = {
     'alexpihouee94': 'Alex',
+    'alexpihouee94@gmail.com': 'Alex',
     'englishcentroadvance': 'Sal',
+    'englishcentroadvance@gmail.com': 'Sal',
     'jat709': 'Jen',
+    'jat709@gmail.com': 'Jen',
     'micky.thomas': 'Micky',
+    'micky.thomas@gmail.com': 'Micky',
     'susie_pihouee': 'Susie',
+    'susie_pihouee@gmail.com': 'Susie',
     'thomasclubbben': 'Ben',
     'thomasclubbben@gmail.com': 'Ben',
     'maxthomasclubb': 'Max',
@@ -49,15 +54,19 @@ export const ADMIN_EMAILS = [
 
 /**
  * Family email list — notified on chalet updates (bookings, handovers, issues).
- * Testing: only Ben for now. Add the others when ready.
+ * The person who triggered the update is skipped when others are on the list.
  *
  * Sending requires Firebase Extension "Trigger Email from Firestore"
  * (collection id: mail) + Firestore rules allowing create on `mail`.
  */
 export const FAMILY_EMAIL_LIST = [
-    'thomasclubbben@gmail.com'
-    // 'maxthomasclubb@gmail.com',
-    // 'alex…',
+    'thomasclubbben@gmail.com',      // Ben
+    'maxthomasclubb@gmail.com',      // Max
+    'alexpihouee94@gmail.com',       // Alex
+    'englishcentroadvance@gmail.com',// Sal
+    'jat709@gmail.com',              // Jen
+    'micky.thomas@gmail.com',        // Micky
+    'susie_pihouee@gmail.com'        // Susie
 ];
 
 /** @deprecated use FAMILY_EMAIL_LIST — kept so older imports keep working */
