@@ -719,12 +719,60 @@ h1, h2, h3, h4, .navbar-brand, .fc-toolbar-title, #welcome-title {
     background: rgba(255, 252, 248, 0.9); backdrop-filter: blur(10px);
 }
 .issue-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(31,61,50,0.12); z-index: 10; }
+.issue-card-resolved { opacity: 0.96; }
 .card-img-top { height: 220px; object-fit: cover; }
 .photo-placeholder {
     height: 220px;
     background: linear-gradient(135deg, var(--pine-soft) 0%, var(--mist-deep) 100%);
     display: flex; align-items: center; justify-content: center;
     font-size: 3rem; color: rgba(255,255,255,0.55);
+}
+
+.board-filter-bar {
+    display: inline-flex;
+    gap: 0.35rem;
+    padding: 0.3rem;
+    background: rgba(255, 252, 248, 0.85);
+    border: 1px solid rgba(31, 61, 50, 0.08);
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(31, 61, 50, 0.05);
+}
+
+.board-filter-btn {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.45rem 1.1rem;
+    border-radius: 999px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.board-filter-btn:hover {
+    color: var(--pine);
+    background: rgba(47, 92, 74, 0.06);
+}
+
+.board-filter-btn.active {
+    background: var(--pine);
+    color: #fff;
+}
+
+.issue-badge-fix-pending {
+    background: rgba(176, 141, 87, 0.2);
+    color: #8a6a1f;
+}
+
+.issue-badge-resolved {
+    background: rgba(47, 92, 74, 0.14);
+    color: var(--pine-mid);
+}
+
+.issue-resolve-claim,
+.issue-resolve-done {
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(31, 61, 50, 0.08);
 }
 
 /* 6. CALENDAR */

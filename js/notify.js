@@ -4,6 +4,7 @@ import {
     renderBookingEmail,
     renderHandoverEmail,
     renderIssueEmail,
+    renderIssueResolvedEmail,
     renderSimpleEmail,
     todayLocalIso
 } from './emailTemplate.js';
@@ -120,5 +121,21 @@ export async function notifyIssue({ userEmail, title, category, isAnonymous, des
         ...mail,
         meta: { type: 'issue', userEmail, category },
         excludeEmail: isAnonymous ? null : userEmail
+    });
+}
+
+export async function notifyIssueResolved({ resolverEmail, title, category, note = '' }) {
+    const mail = renderIssueResolvedEmail({
+        who: familyName(resolverEmail),
+        title,
+        category,
+        note,
+        siteUrl: SITE_URL
+    });
+
+    await notifyFamily({
+        ...mail,
+        meta: { type: 'issue_resolved', resolverEmail, category },
+        excludeEmail: resolverEmail
     });
 }

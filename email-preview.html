@@ -24,7 +24,7 @@
 <div class="grid" id="grid"></div>
 
 <script type="module">
-import { renderBookingEmail, renderHandoverEmail, renderIssueEmail } from './js/emailTemplate.js';
+import { renderBookingEmail, renderHandoverEmail, renderIssueEmail, renderIssueResolvedEmail } from './js/emailTemplate.js';
 
 // Resolve against wherever this page is served from, so the banner
 // loads both locally and on GitHub Pages.
@@ -70,6 +70,13 @@ const samples = [
         title: 'Shower door leaks onto the landing',
         category: 'Maintenance',
         description: 'The seal along the bottom of the downstairs shower door has gone. Water runs out onto the wooden floor every time someone uses it. Needs a new strip — a few euros at the hardware shop in town.',
+        siteUrl
+    })],
+    ['Issue resolved', renderIssueResolvedEmail({
+        who: 'Micky',
+        title: 'the upstairs bathroom tap',
+        category: 'Plumbing',
+        note: 'New washer fitted — drips gone.',
         siteUrl
     })]
 ];

@@ -471,6 +471,43 @@ export function renderIssueEmail({ who, title, category, description = '', siteU
     };
 }
 
+export function renderIssueResolvedEmail({
+    who, title, category, note = '', siteUrl = ''
+}) {
+    const cleanNote = String(note || '').trim();
+    const subject = `Fixed · ${who} solved ${title}`;
+
+    const text = [
+        `${who} solved: ${title}`,
+        category ? `Category: ${category}` : null,
+        cleanNote ? `Note: ${cleanNote}` : null,
+        '',
+        `See the board: ${siteUrl}`
+    ].filter(Boolean).join('\n');
+
+    const bodyHtml = [
+        paragraph(`Good news from the chalet &mdash; <strong>${escapeHtml(who)}</strong> has fixed <strong>${escapeHtml(title)}</strong>. Confirmed and closed on the family board.`),
+        category ? `<div style="padding-bottom:14px">${pill(category, C.greenBg, C.green)}</div>` : '',
+        cleanNote
+            ? noteCard('From the fixer', `&ldquo;${escapeHtml(cleanNote)}&rdquo;`, C.green)
+            : noteCard('Status', `<span style="font-family:${FONT_BODY};font-size:14px;font-weight:700;color:${C.green}">Resolved and verified.</span>`, C.green)
+    ].join('');
+
+    return {
+        subject,
+        text,
+        html: shell({
+            eyebrow: 'Problem solved',
+            heading: `${who} solved ${title}`,
+            tag: 'Board',
+            preheader: `${who} fixed it · ${category || 'Chalet'}`,
+            bodyHtml,
+            ctaLabel: 'See the board',
+            siteUrl
+        })
+    };
+}
+
 /** Plain fallback for ad-hoc messages. */
 export function renderSimpleEmail({ subject, text, siteUrl = '' }) {
     return {

@@ -25,6 +25,7 @@ const POINTS = {
     noMeal: -1,
     perfectExit: 10,
     issue: 2,
+    resolve: 8,
     vote: 1
 };
 
@@ -72,6 +73,16 @@ function issueDay(issue) {
     return null;
 }
 
+function resolvedDay(issue) {
+    if (issue.resolvedAt && typeof issue.resolvedAt.toDate === 'function') {
+        return issue.resolvedAt.toDate().toISOString().split('T')[0];
+    }
+    if (issue.resolvedClaimedAt && typeof issue.resolvedClaimedAt.toDate === 'function') {
+        return issue.resolvedClaimedAt.toDate().toISOString().split('T')[0];
+    }
+    return issueDay(issue);
+}
+
 function findHandoverForBooking(booking, handovers) {
     const graceEnd = addDays(booking.endDate, 2);
     const matches = handovers.filter(h => {
@@ -103,6 +114,7 @@ function ensurePlayer(map, email) {
             perfectExits: 0,
             messyExits: 0,
             issues: 0,
+            fixes: 0,
             votes: 0,
             events: []
         };
@@ -133,6 +145,7 @@ function buildLeaderboardMap() {
             p.perfectExits = 0;
             p.messyExits = 0;
             p.issues = 0;
+            p.fixes = 0;
             p.votes = 0;
         });
         return map;
@@ -232,37 +245,53 @@ function buildLeaderboardMap() {
 
     leaderboardState.issues.forEach(issue => {
         const day = issueDay(issue);
-        if (day && day < scoreFrom) return;
+        if (!day || day >= scoreFrom) {
+            if (issue.userEmail) {
+                const author = ensurePlayer(map, issue.userEmail);
+                if (author) {
+                    author.issues += 1;
+                    pushEvent(author, {
+                        points: POINTS.issue,
+                        title: 'Issue reported',
+                        detail: issue.title || 'Community board',
+                        date: day || ''
+                    });
+                }
+            }
 
-        if (issue.userEmail) {
-            const author = ensurePlayer(map, issue.userEmail);
-            if (author) {
-                author.issues += 1;
-                pushEvent(author, {
-                    points: POINTS.issue,
-                    title: 'Issue reported',
+            const voters = new Set([
+                ...(issue.votedBy || []),
+                ...(issue.downvotedBy || [])
+            ]);
+            voters.forEach(voterEmail => {
+                const voter = ensurePlayer(map, voterEmail);
+                if (!voter) return;
+                voter.votes += 1;
+                const kind = (issue.votedBy || []).includes(voterEmail) ? 'Upvoted' : 'Downvoted';
+                pushEvent(voter, {
+                    points: POINTS.vote,
+                    title: `${kind} an issue`,
                     detail: issue.title || 'Community board',
                     date: day || ''
                 });
-            }
+            });
         }
 
-        const voters = new Set([
-            ...(issue.votedBy || []),
-            ...(issue.downvotedBy || [])
-        ]);
-        voters.forEach(voterEmail => {
-            const voter = ensurePlayer(map, voterEmail);
-            if (!voter) return;
-            voter.votes += 1;
-            const kind = (issue.votedBy || []).includes(voterEmail) ? 'Upvoted' : 'Downvoted';
-            pushEvent(voter, {
-                points: POINTS.vote,
-                title: `${kind} an issue`,
-                detail: issue.title || 'Community board',
-                date: day || ''
-            });
-        });
+        // Points only after Ben confirms the fix
+        if (issue.status === 'resolved' && issue.resolvedByEmail) {
+            const rDay = resolvedDay(issue);
+            if (rDay && rDay < scoreFrom) return;
+            const fixer = ensurePlayer(map, issue.resolvedByEmail);
+            if (fixer) {
+                fixer.fixes += 1;
+                pushEvent(fixer, {
+                    points: POINTS.resolve,
+                    title: 'Issue fixed',
+                    detail: issue.title || 'Community board',
+                    date: rDay || ''
+                });
+            }
+        }
     });
 
     // Sort each player's events newest-ish first
@@ -370,6 +399,7 @@ function renderLeaderboard() {
             if (p.messyExits) bits.push(`${p.messyExits} messy`);
             if (p.missedHandovers) bits.push(`${p.missedHandovers} missed`);
             if (p.issues) bits.push(`${p.issues} reports`);
+            if (p.fixes) bits.push(`${p.fixes} fixes`);
             if (p.votes) bits.push(`${p.votes} votes`);
             if (bits.length) subtitle = bits.join(' · ');
         }
@@ -572,7 +602,7 @@ function startIssuesListener() {
         let count = 0;
         snapshot.forEach(docSnap => {
             const s = docSnap.data().status;
-            if (s === 'pending' || s === 'approved') count++;
+            if (s === 'pending' || s === 'approved' || s === 'fix_pending') count++;
         });
 
         const el = document.getElementById('widget-issues');
