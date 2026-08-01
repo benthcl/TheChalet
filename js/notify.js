@@ -133,9 +133,9 @@ export async function notifyIssueResolved({ resolverEmail, title, category, note
         siteUrl: SITE_URL
     });
 
+    // Include the fixer — the email is validation for them, not just a heads-up for others.
     await notifyFamily({
         ...mail,
-        meta: { type: 'issue_resolved', resolverEmail, category },
-        excludeEmail: resolverEmail
+        meta: { type: 'issue_resolved', resolverEmail, category }
     });
 }

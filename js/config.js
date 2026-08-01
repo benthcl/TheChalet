@@ -30,6 +30,8 @@ const FAMILY_NAME_MAP = {
     'jat709@gmail.com': 'Jen',
     'micky.thomas': 'Micky',
     'micky.thomas@gmail.com': 'Micky',
+    'stephen.farmer': 'Stephen',
+    'stephen.farmer@gmail.com': 'Stephen',
     'susie_pihouee': 'Susie',
     'susie_pihouee@gmail.com': 'Susie',
     'thomasclubbben': 'Ben',
@@ -60,12 +62,13 @@ export const ADMIN_EMAILS = [
  * (collection id: mail) + Firestore rules allowing create on `mail`.
  */
 export const FAMILY_EMAIL_LIST = [
-    'thomasclubbben@gmail.com',      // Ben
-    'maxthomasclubb@gmail.com',      // Max
-    'alexpihouee94@gmail.com',       // Alex
-    'englishcentroadvance@gmail.com',// Sal
-    'jat709@gmail.com',              // Jen
-    'micky.thomas@gmail.com',        // Micky
+    'thomasclubbben@gmail.com',       // Ben
+    'maxthomasclubb@gmail.com',       // Max
+    'alexpihouee94@gmail.com',        // Alex
+    'englishcentroadvance@gmail.com', // Sal
+    'jat709@gmail.com',               // Jen
+    'micky.thomas@gmail.com',         // Micky
+    'stephen.farmer@gmail.com',       // Stephen
     'susie_pihouee@gmail.com'        // Susie
 ];
 
