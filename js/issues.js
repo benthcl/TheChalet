@@ -93,10 +93,60 @@ function resolveControls(data, id, currentUser) {
             <div class="small fw-bold" style="color: var(--pine-mid);"><i class="bi bi-patch-check-fill me-1"></i>Fixed by ${escapeHtml(who)}</div>
             ${note ? `<div class="small fst-italic text-secondary mt-1">“${escapeHtml(note)}”</div>` : ''}
             ${data.resolutionImageUrl ? `<button type="button" class="btn btn-link btn-sm px-0 mt-1" onclick="window.openLightbox('${escapeHtml(data.resolutionImageUrl)}', 'Fixed photo')">View fixed photo</button>` : ''}
+            ${reactionsBlock(data, id, currentUser)}
         </div>`;
     }
 
     return '';
+}
+
+const QUICK_REACTIONS = ['Nice one!', 'Legend', 'Thanks!', 'Well done'];
+
+function formatReactionTime(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+}
+
+function reactionsBlock(data, id, currentUser) {
+    const reactions = Array.isArray(data.reactions) ? data.reactions : [];
+    const admin = isAdmin(currentUser.email);
+
+    const list = reactions.length
+        ? reactions.map(r => {
+            const canDelete = admin || r.userEmail === currentUser.email;
+            const del = canDelete
+                ? `<button type="button" class="issue-reaction-del" title="Remove" onclick="window.deleteIssueReaction('${id}', '${escapeHtml(r.id)}')">&times;</button>`
+                : '';
+            return `
+            <div class="issue-reaction">
+                <div class="issue-reaction-body">
+                    <span class="issue-reaction-who">${escapeHtml(familyName(r.userEmail))}</span>
+                    <span class="issue-reaction-text">${escapeHtml(r.text)}</span>
+                </div>
+                <div class="issue-reaction-meta">
+                    <span>${escapeHtml(formatReactionTime(r.at))}</span>
+                    ${del}
+                </div>
+            </div>`;
+        }).join('')
+        : `<div class="small text-secondary mb-2">Say thanks — keep it short.</div>`;
+
+    const chips = QUICK_REACTIONS.map(t =>
+        `<button type="button" class="issue-reaction-chip" onclick="window.addIssueReaction('${id}', '${escapeHtml(t)}')">${escapeHtml(t)}</button>`
+    ).join('');
+
+    return `
+    <div class="issue-reactions mt-3">
+        <div class="section-label mb-2" style="font-size:0.65rem">Reactions</div>
+        <div class="issue-reaction-list">${list}</div>
+        <div class="issue-reaction-chips mb-2">${chips}</div>
+        <div class="issue-reaction-compose">
+            <input type="text" class="form-control form-control-sm bg-light border-0 rounded-pill px-3" id="reaction-input-${id}" maxlength="80" placeholder="Short note…" onkeydown="if(event.key==='Enter'){event.preventDefault();window.submitIssueReaction('${id}')}">
+            <button type="button" class="btn btn-sm btn-success rounded-pill px-3" onclick="window.submitIssueReaction('${id}')">Post</button>
+        </div>
+    </div>`;
 }
 
 function renderIssueCard(documentSnapshot, currentUser) {
@@ -516,4 +566,62 @@ window.deleteIssue = async (id) => {
         customClass: { popup: 'glass-panel' }
     });
     if (result.isConfirmed) await deleteDoc(doc(db, 'complaints', id));
+};
+
+window.submitIssueReaction = (id) => {
+    const input = document.getElementById(`reaction-input-${id}`);
+    const text = input?.value?.trim() || '';
+    if (!text) return;
+    window.addIssueReaction(id, text);
+};
+
+window.addIssueReaction = async (id, text) => {
+    if (!auth.currentUser) {
+        return Swal.fire({
+            title: 'Hold on!',
+            text: 'Log in to leave a reaction.',
+            icon: 'warning',
+            confirmButtonColor: '#1f3d32',
+            customClass: { popup: 'glass-panel' }
+        });
+    }
+
+    const clean = String(text || '').trim().slice(0, 80);
+    if (!clean) return;
+
+    const issueRef = doc(db, 'complaints', id);
+    const snap = await getDoc(issueRef);
+    if (!snap.exists() || snap.data().status !== 'resolved') return;
+
+    const reaction = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        userEmail: auth.currentUser.email,
+        text: clean,
+        at: new Date().toISOString()
+    };
+
+    await updateDoc(issueRef, { reactions: arrayUnion(reaction) });
+
+    const input = document.getElementById(`reaction-input-${id}`);
+    if (input) input.value = '';
+};
+
+window.deleteIssueReaction = async (issueId, reactionId) => {
+    if (!auth.currentUser) return;
+
+    const issueRef = doc(db, 'complaints', issueId);
+    const snap = await getDoc(issueRef);
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+    const reactions = Array.isArray(data.reactions) ? data.reactions : [];
+    const target = reactions.find(r => r.id === reactionId);
+    if (!target) return;
+
+    const allowed = isAdmin(auth.currentUser.email) || target.userEmail === auth.currentUser.email;
+    if (!allowed) return;
+
+    await updateDoc(issueRef, {
+        reactions: reactions.filter(r => r.id !== reactionId)
+    });
 };
