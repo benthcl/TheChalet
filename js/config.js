@@ -17,6 +17,110 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-export const ADMIN_EMAILS = [ 
-    "thomasclubbben@gmail.com"
+/**
+ * Family directory — names shown in the app instead of email prefixes.
+ * Keys may be a full email or just the local part (before @).
+ */
+const FAMILY_NAME_MAP = {
+    'alexpihouee94': 'Alex',
+    'englishcentroadvance': 'Sal',
+    'jat709': 'Jen',
+    'micky.thomas': 'Micky',
+    'susie_pihouee': 'Susie',
+    'thomasclubbben': 'Ben',
+    'thomasclubbben@gmail.com': 'Ben',
+    'maxthomasclubb': 'Max',
+    'maxthomasclubb@gmail.com': 'Max'
+};
+
+/**
+ * Removed / test accounts — still may exist in old Firestore docs,
+ * but must never appear on the leaderboard or in family UI lists.
+ */
+export const EXCLUDED_EMAILS = [
+    'cousing@gmail.com',
+    'cousing'
 ];
+
+/** Admins can approve issues, delete reports, edit stock anytime, etc. */
+export const ADMIN_EMAILS = [
+    'thomasclubbben@gmail.com'
+];
+
+/**
+ * Family email list — notified on chalet updates (bookings, handovers, issues).
+ * Testing: only Ben for now. Add the others when ready.
+ *
+ * Sending requires Firebase Extension "Trigger Email from Firestore"
+ * (collection id: mail) + Firestore rules allowing create on `mail`.
+ */
+export const FAMILY_EMAIL_LIST = [
+    'thomasclubbben@gmail.com'
+    // 'maxthomasclubb@gmail.com',
+    // 'alex…',
+];
+
+/** @deprecated use FAMILY_EMAIL_LIST — kept so older imports keep working */
+export const NOTIFY_EMAILS = FAMILY_EMAIL_LIST;
+
+/**
+ * Email branding. FROM must use an address verified in Brevo.
+ * Brevo may rewrite the visible address until a sending domain is
+ * authenticated, but the "The Chalet" display name still shows.
+ */
+export const EMAIL_FROM = 'The Chalet <thomasclubbben@gmail.com>';
+export const EMAIL_REPLY_TO = 'thomasclubbben@gmail.com';
+export const SITE_URL = 'https://benthcl.github.io/TheChalet/';
+
+function normalizeEmail(email) {
+    return String(email || '').toLowerCase().trim();
+}
+
+export function isExcludedEmail(email) {
+    if (!email) return true;
+    const lower = normalizeEmail(email);
+    const local = lower.split('@')[0];
+    return EXCLUDED_EMAILS.some(x => {
+        const n = normalizeEmail(x);
+        return n === lower || n === local;
+    });
+}
+
+/** True if this email maps to a known family member (and is not excluded). */
+export function isKnownFamily(email) {
+    if (!email || isExcludedEmail(email)) return false;
+    const lower = normalizeEmail(email);
+    const local = lower.split('@')[0];
+    return Boolean(FAMILY_NAME_MAP[lower] || FAMILY_NAME_MAP[local]);
+}
+
+export function familyName(email) {
+    if (!email) return 'Family member';
+    const lower = normalizeEmail(email);
+    if (FAMILY_NAME_MAP[lower]) return FAMILY_NAME_MAP[lower];
+    const local = lower.split('@')[0];
+    return FAMILY_NAME_MAP[local] || local;
+}
+
+export function getNotifyEmails() {
+    return [...new Set((FAMILY_EMAIL_LIST || []).map(normalizeEmail).filter(e => e && !isExcludedEmail(e)))];
+}
+
+/**
+ * Leaderboard scoring. Keep LIVE false until you're ready —
+ * everyone shows 0 and profiles have no point history yet.
+ */
+export const LEADERBOARD_SCORING_LIVE = false;
+export const LEADERBOARD_SCORE_FROM = '2026-07-28';
+
+/**
+ * Chalet coordinates for weather (Open-Meteo / Météo-France AROME).
+ * Les Contamines-Montjoie — house: 45°49'46.10"N 6°43'38.31"E, 1,094 m
+ */
+export const CHALET_LOCATION = {
+    label: 'Les Contamines-Montjoie',
+    latitude: 45.829472,
+    longitude: 6.727308,
+    elevation: 1094,
+    timezone: 'Europe/Paris'
+};

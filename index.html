@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chalet Manager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>The Chalet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="login-screen" class="d-flex flex-column justify-content-center align-items-center min-vh-100">
         <div class="glass-panel p-5 rounded-5 shadow-lg text-center" style="max-width: 400px; width: 90%;">
-            <div class="mb-4"><i class="bi bi-snow2 display-1 text-primary"></i></div>
+            <div class="login-mark"><i class="bi bi-house-heart-fill"></i></div>
             <h2 class="fw-bold mb-1">The Chalet</h2>
-            <p class="text-secondary mb-4 small">Member Access</p>
+            <p class="text-secondary mb-4 small">Family member access</p>
             <form id="login-form">
                 <input type="email" class="form-control form-control-lg border-0 bg-white bg-opacity-50 mb-3 rounded-pill px-4" id="loginEmail" placeholder="Email" required>
                 <input type="password" class="form-control form-control-lg border-0 bg-white bg-opacity-50 mb-4 rounded-pill px-4" id="loginPassword" placeholder="Password" required>
@@ -29,20 +31,34 @@
         
         <nav class="navbar navbar-expand-lg chalet-navbar sticky-top px-4 py-3 shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
-                    <i class="bi bi-house-door-fill text-success"></i><span>The Chalet</span>
+                <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#" data-section="home">
+                    <i class="bi bi-house-door-fill"></i><span>The Chalet</span>
                 </a>
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <ul class="navbar-nav align-items-center gap-3">
-                        <li class="nav-item"><a class="nav-link active fw-bold" href="#" data-section="home">Home</a></li>
-                        <li class="nav-item"><a class="nav-link fw-bold" href="#" data-section="issues">Board</a></li>
-                        <li class="nav-item"><a class="nav-link fw-bold" href="#" data-section="calendar">Calendar</a></li>
-                        <li class="nav-item"><a class="nav-link fw-bold" href="#" data-section="stock">Stockroom</a></li>
-                        <li class="nav-item"><a class="nav-link fw-bold" href="#" data-section="gallery">Gallery</a></li>
-                        <li class="nav-item d-none d-lg-block text-secondary small" id="user-display-email"></li>
+                    <ul class="navbar-nav align-items-lg-center gap-1 gap-lg-2">
+                        <li class="nav-item">
+                            <a class="nav-link active fw-bold" href="#" data-section="home">Home</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown" data-nav-group="stay" aria-expanded="false">Stay</a>
+                            <ul class="dropdown-menu dropdown-menu-end chalet-dropdown">
+                                <li><a class="dropdown-item" href="#" data-section="calendar"><i class="bi bi-calendar3 me-2"></i>Calendar</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="weather"><i class="bi bi-cloud-sun me-2"></i>Weather</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="stock"><i class="bi bi-box-seam me-2"></i>Stockroom</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown" data-nav-group="family" aria-expanded="false">Family</a>
+                            <ul class="dropdown-menu dropdown-menu-end chalet-dropdown">
+                                <li><a class="dropdown-item" href="#" data-section="issues"><i class="bi bi-clipboard2-pulse me-2"></i>Board</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="gallery"><i class="bi bi-images me-2"></i>Gallery</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="leaderboard"><i class="bi bi-trophy me-2"></i>Leaderboard</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item d-none d-lg-block text-secondary small ps-lg-2" id="user-display-email"></li>
                         <li class="nav-item"><button id="logout-button" class="btn btn-outline-dark rounded-pill px-4 btn-sm">Logout</button></li>
                     </ul>
                 </div>
@@ -64,9 +80,9 @@
                         </div>
                     </div>
 
-                    <h5 class="fw-bold text-secondary mb-3 px-2">At a Glance</h5>
+                    <p class="section-label mb-3 px-2">At a glance</p>
                     <div class="row g-4 mb-5">
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-md-6 col-lg-3">
                             <div class="card h-100 glass-panel border-0 cursor-pointer p-2 rounded-5" onclick="document.querySelector('[data-section=\'calendar\']').click()">
                                 <div class="card-body p-4">
                                     <div class="widget-icon-box widget-trip"><i class="bi bi-calendar-event-fill"></i></div>
@@ -75,7 +91,16 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 glass-panel border-0 cursor-pointer p-2 rounded-5" onclick="document.querySelector('[data-section=\'weather\']').click()">
+                                <div class="card-body p-4">
+                                    <div class="widget-icon-box widget-weather"><i class="bi bi-cloud-sun-fill"></i></div>
+                                    <div id="widget-weather"><div class="spinner-border spinner-border-sm text-secondary" role="status"></div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-3">
                             <div class="card h-100 glass-panel border-0 cursor-pointer p-2 rounded-5" onclick="document.querySelector('[data-section=\'stock\']').click()">
                                 <div class="card-body p-4">
                                     <div class="widget-icon-box widget-stock"><i class="bi bi-box-seam-fill"></i></div>
@@ -84,11 +109,46 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-md-6 col-lg-3">
                             <div class="card h-100 glass-panel border-0 cursor-pointer p-2 rounded-5" onclick="document.querySelector('[data-section=\'issues\']').click()">
                                 <div class="card-body p-4">
                                     <div class="widget-icon-box widget-issue"><i class="bi bi-tools"></i></div>
                                     <div id="widget-issues"><div class="spinner-border spinner-border-sm text-secondary" role="status"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-5">
+                        <div class="col-lg-5">
+                            <div class="card glass-panel border-0 h-100 rounded-5 p-2 cursor-pointer" onclick="document.querySelector('[data-section=\'stock\']').click()">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        <div class="widget-icon-box widget-stock mb-0"><i class="bi bi-cart3"></i></div>
+                                        <div>
+                                            <h4 class="fw-bold m-0">Shopping list</h4>
+                                            <p class="text-secondary small m-0">Empty basics from the stockroom</p>
+                                        </div>
+                                    </div>
+                                    <div id="shopping-list-widget">
+                                        <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="card glass-panel border-0 h-100 rounded-5 p-2">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        <div class="widget-icon-box widget-board mb-0"><i class="bi bi-chat-quote-fill"></i></div>
+                                        <div>
+                                            <h4 class="fw-bold m-0">From the last handover</h4>
+                                            <p class="text-secondary small m-0">Note left for whoever arrives next</p>
+                                        </div>
+                                    </div>
+                                    <div id="last-handover-note">
+                                        <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -99,7 +159,7 @@
                             <div class="card glass-panel border-0 h-100 rounded-5 p-2">
                                 <div class="card-body p-4">
                                     <div class="d-flex align-items-center gap-3 mb-4">
-                                        <div class="bg-success bg-opacity-10 text-success rounded-circle p-2"><i class="bi bi-wifi fs-4"></i></div>
+                                        <div class="bg-opacity-10 rounded-circle p-2" style="background: rgba(47,92,74,0.12); color: #2f5c4a;"><i class="bi bi-wifi fs-4"></i></div>
                                         <h4 class="fw-bold m-0">WiFi & Access</h4>
                                     </div>
                                     <div class="row g-3">
@@ -115,7 +175,7 @@
                                                     <div class="small fw-bold text-secondary mb-1">PASSWORD</div>
                                                     <div class="fs-5 fw-bold font-monospace text-dark">Mountains2024!</div>
                                                 </div>
-                                                <button class="btn btn-white shadow-sm rounded-circle" onclick="navigator.clipboard.writeText('Mountains2024!')"><i class="bi bi-clipboard"></i></button>
+                                                <button type="button" class="btn btn-white shadow-sm rounded-circle" title="Copy password" onclick="navigator.clipboard.writeText('Mountains2024!').then(() => typeof Swal !== 'undefined' && Swal.fire({toast:true,position:'top-end',icon:'success',title:'Password copied',showConfirmButton:false,timer:1500}))"><i class="bi bi-clipboard"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -124,7 +184,7 @@
                         </div>
 
                         <div class="col-lg-4">
-                            <div class="card shadow-sm border-0 h-100 rounded-5 overflow-hidden text-white" style="position: relative;">
+                            <div class="card shadow-sm border-0 h-100 rounded-5 overflow-hidden text-white" style="position: relative; min-height: 220px;">
                                 <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: url('photos/chalet2.jpg') center/cover;"></div>
                                 <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);"></div>
                                 <div class="card-body p-4 d-flex flex-column justify-content-end" style="position: relative; z-index: 2;">
@@ -140,9 +200,53 @@
                     </div>
                 </section>
 
+                <section id="leaderboard-section" class="dashboard-section d-none fade-in">
+                    <div class="glass-panel p-4 rounded-5 mb-4">
+                        <div class="d-flex align-items-center gap-3 mb-1">
+                            <div class="widget-icon-box widget-board mb-0"><i class="bi bi-trophy-fill"></i></div>
+                            <div>
+                                <h2 class="fw-bold m-0">Family Leaderboard</h2>
+                                <p class="text-secondary m-0 small">Click a person to see their score history. Everyone starts at 0.</p>
+                            </div>
+                        </div>
+                        <div id="leaderboard-status-banner" class="alert border-0 mt-3 mb-0 py-2 px-3 d-none" style="background: rgba(47,92,74,0.08); color: var(--pine);"></div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <div class="card glass-panel border-0 rounded-5 p-2">
+                                <div class="card-body p-4">
+                                    <div id="leaderboard-list">
+                                        <div class="text-secondary small py-3">Loading contributions…</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card glass-panel border-0 rounded-5 p-2 h-100">
+                                <div class="card-body p-4">
+                                    <p class="section-label mb-3">How points work</p>
+                                    <ul class="list-unstyled mb-0 leaderboard-legend">
+                                        <li><span class="legend-pts legend-zero">0</span> Never visited — neutral</li>
+                                        <li><span class="legend-pts legend-neg">−15</span> Left without signing off</li>
+                                        <li><span class="legend-pts legend-zero">0</span> Signed off (expected, not a bonus)</li>
+                                        <li><span class="legend-pts legend-neg">−2</span> Per essential left empty</li>
+                                        <li><span class="legend-pts legend-neg">−3</span> Per leave-check skipped</li>
+                                        <li><span class="legend-pts legend-neg">−5</span> Dirty laundry left behind</li>
+                                        <li><span class="legend-pts legend-neg">−1</span> No tea/coffee or no meal left</li>
+                                        <li><span class="legend-pts">+10</span> Perfect exit — clean, stocked &amp; checks done</li>
+                                        <li><span class="legend-pts">+2</span> Issue reported</li>
+                                        <li><span class="legend-pts">+1</span> Board vote cast</li>
+                                    </ul>
+                                    <p class="text-secondary small mt-4 mb-0">Showing up is not a contribution. Looking after the house for the next family is.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <section id="issues-section" class="dashboard-section d-none fade-in">
                     <div class="d-flex justify-content-between align-items-center mb-5 glass-panel p-4 rounded-4">
-                        <div><h2 class="fw-bold m-0">Community Board</h2><p class="text-secondary m-0 small">Vote on what matters most.</p></div>
+                        <div><h2 class="fw-bold m-0">Community Board</h2><p class="text-secondary m-0 small">Upvote or downvote what matters.</p></div>
                         <button class="btn btn-premium" data-bs-toggle="modal" data-bs-target="#addIssueModal"><i class="bi bi-plus-lg me-2"></i>New Report</button>
                     </div>
                     <div id="complaints-list" class="row g-4"></div>
@@ -151,18 +255,31 @@
                 <section id="calendar-section" class="dashboard-section d-none fade-in">
                     <div class="glass-panel p-4 rounded-5">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div><h2 class="fw-bold m-0">Trip Planner</h2><p class="text-secondary m-0 small">Click any trip to see details or edit.</p></div>
-                            <button class="btn btn-premium" data-bs-toggle="modal" data-bs-target="#addTripModal"><i class="bi bi-calendar-plus me-2"></i>Book Dates</button>
+                            <div><h2 class="fw-bold m-0">Trip Planner</h2><p class="text-secondary m-0 small">Click a trip to view, edit, or cancel.</p></div>
+                            <button class="btn btn-premium" id="btn-new-trip" data-bs-toggle="modal" data-bs-target="#addTripModal"><i class="bi bi-calendar-plus me-2"></i>Book Dates</button>
                         </div>
                         <div id='calendar' class="bg-white rounded-4 p-3 shadow-sm"></div>
                     </div>
+                </section>
+
+                <section id="weather-section" class="dashboard-section d-none fade-in">
+                    <div class="glass-panel p-4 rounded-5 mb-4">
+                        <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
+                            <div>
+                                <h2 class="fw-bold m-0">Mountain Weather</h2>
+                                <p class="text-secondary m-0 small">Les Contamines-Montjoie — Météo-France AROME, updates on its own.</p>
+                            </div>
+                            <div class="section-label mb-0">Météo-France</div>
+                        </div>
+                    </div>
+                    <div id="weather-root"></div>
                 </section>
 
                 <section id="stock-section" class="dashboard-section d-none fade-in">
                     <div class="glass-panel p-4 rounded-5 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <div>
                             <h2 class="fw-bold m-0">The Stockroom</h2>
-                            <p class="text-secondary m-0 small">Update status and sign-off before leaving.</p>
+                            <p class="text-secondary m-0 small">Quick leave check — then sign off.</p>
                         </div>
                         <button id="btn-publish-report" onclick="window.publishHandover()" class="btn btn-dark rounded-pill px-4 py-2 shadow-sm" disabled>
                             <i class="bi bi-file-earmark-check me-2"></i>Sign-Off & Publish Report
@@ -221,8 +338,29 @@
                         <div class="col-12">
                             <div class="card shadow-sm glass-panel border-0">
                                 <div class="card-body p-4">
-                                    <h5 class="fw-bold mb-4">Household Essentials</h5>
+                                    <h5 class="fw-bold mb-1">Basics</h5>
+                                    <p class="text-secondary small mb-4">Tap green if it’s there for the next guests.</p>
                                     <div class="row g-3" id="essentials-grid"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card shadow-sm glass-panel border-0">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold mb-1">Before you go</h5>
+                                    <p class="text-secondary small mb-4">Three quick checks. That’s it.</p>
+                                    <div class="row g-3" id="checks-grid"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card shadow-sm glass-panel border-0">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold mb-1">Note for next guests</h5>
+                                    <p class="text-secondary small mb-3">Optional — anything useful to know.</p>
+                                    <textarea id="nextGuestNote" onblur="window.saveNextGuestNote()" class="form-control bg-light border-0 rounded-4 p-3" rows="2" placeholder="e.g. Hot water takes 2 mins. Spare duvet in the loft…" disabled></textarea>
                                 </div>
                             </div>
                         </div>
@@ -252,24 +390,24 @@
                     </div>
 
                     <div class="gallery-grid">
-                    
-                    <div class="gallery-item" onclick="openLightbox('photos/IMG_1047.jpg', '')">
-                        <img src="photos/IMG_1047.jpg" alt="Gallery Photo" loading="lazy">
+
+                    <div class="gallery-item" onclick="openLightbox('photos/img_1047.jpg', '')">
+                        <img src="photos/img_1047.jpg" alt="Gallery Photo" loading="lazy">
                         <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
                     </div>
 
-                    <div class="gallery-item" onclick="openLightbox('photos/sue+alex.jpg', '')">
-                        <img src="photos/sue+alex.jpg" alt="Gallery Photo" loading="lazy">
+                    <div class="gallery-item" onclick="openLightbox('photos/sue%2Balex.jpg', '')">
+                        <img src="photos/sue%2Balex.jpg" alt="Gallery Photo" loading="lazy">
                         <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
                     </div>
 
-                    <div class="gallery-item" onclick="openLightbox('photos/Cheers.jpg', '')">
-                        <img src="photos/Cheers.jpg" alt="Gallery Photo" loading="lazy">
+                    <div class="gallery-item" onclick="openLightbox('photos/cheers.jpg', '')">
+                        <img src="photos/cheers.jpg" alt="Gallery Photo" loading="lazy">
                         <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
                     </div>
 
-                    <div class="gallery-item" onclick="openLightbox('photos/dsc01510.JPG', '')">
-                        <img src="photos/dsc01510.JPG" alt="Gallery Photo" loading="lazy">
+                    <div class="gallery-item" onclick="openLightbox('photos/dsc01510.jpg', '')">
+                        <img src="photos/dsc01510.jpg" alt="Gallery Photo" loading="lazy">
                         <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
                     </div>
 
@@ -343,23 +481,23 @@
                         <div class="gallery-overlay"><i class="bi bi-arrows-angle-expand fs-2 text-white drop-shadow"></i></div>
                     </div>
 
-                </div>
-
                     </div>
                 </section>
 
-            </div> </main>
+            </div>
+        </main>
     </div>
 
     <div class="modal fade" id="addTripModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-5 glass-panel bg-white">
+            <div class="modal-content border-0 shadow-lg rounded-5 glass-panel">
                 <div class="modal-header border-0 pb-0 pt-4 px-4">
-                    <h4 class="modal-title fw-bold">Plan a Trip</h4>
+                    <h4 class="modal-title fw-bold" id="tripModalTitle">Plan a Trip</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
                     <form id="booking-form">
+                        <input type="hidden" id="tripEditId" value="">
                         <div class="mb-3"><label class="form-label small fw-bold text-secondary">WHO IS GOING?</label><input type="text" class="form-control bg-light border-0 rounded-4 p-3" id="tripTitle" placeholder="e.g. Thomas + 4 Friends" required></div>
                         <div class="row g-2 mb-3">
                             <div class="col-6"><label class="form-label small fw-bold text-secondary">ARRIVAL DATE</label><input type="date" class="form-control bg-light border-0 rounded-4 p-3" id="tripStart" required></div>
@@ -367,7 +505,7 @@
                         </div>
                         <div class="mb-3"><label class="form-label small fw-bold text-secondary">ARRIVAL TIME (e.g. 14:00)</label><input type="text" class="form-control bg-light border-0 rounded-4 p-3" id="tripArrival" placeholder="14:00"></div>
                         <div class="mb-4"><label class="form-label small fw-bold text-secondary">DEPARTURE TIME (e.g. 10:00)</label><input type="text" class="form-control bg-light border-0 rounded-4 p-3" id="tripDeparture" placeholder="10:00"></div>
-                        <button type="submit" class="btn btn-premium w-100 rounded-4 py-3">Confirm Booking</button>
+                        <button type="submit" class="btn btn-premium w-100 rounded-4 py-3" id="tripSubmitBtn">Confirm Booking</button>
                     </form>
                 </div>
             </div>
@@ -376,7 +514,7 @@
 
     <div class="modal fade" id="viewTripModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-5 glass-panel bg-white">
+            <div class="modal-content border-0 shadow-lg rounded-5 glass-panel">
                 <div class="modal-header border-0 pb-0 pt-4 px-4">
                     <h4 class="modal-title fw-bold">Trip Details</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -384,7 +522,10 @@
                 <div class="modal-body p-4">
                     <div id="viewTripContent"></div>
                     <div id="tripControls" class="mt-4 pt-3 border-top d-none">
-                        <button id="deleteTripBtn" class="btn btn-danger w-100 rounded-4">Cancel Trip (Delete)</button>
+                        <div class="d-flex flex-column gap-2">
+                            <button id="editTripBtn" class="btn btn-premium w-100 rounded-4">Edit Trip</button>
+                            <button id="deleteTripBtn" class="btn btn-outline-danger w-100 rounded-4">Cancel Trip</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -404,6 +545,31 @@
                         <div class="form-check mb-4"><input class="form-check-input" type="checkbox" id="anonymousCheck"><label class="form-check-label text-secondary" for="anonymousCheck">Post Anonymously</label></div>
                         <button type="submit" class="btn btn-premium w-100 rounded-4 py-3">Publish Report</button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="leaderboardProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg rounded-5 glass-panel">
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="leaderboard-avatar" id="profileAvatar">?</div>
+                        <div>
+                            <h4 class="modal-title fw-bold m-0" id="profileName">Profile</h4>
+                            <div class="small text-secondary" id="profileEmail"></div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="d-flex justify-content-between align-items-end mb-4">
+                        <div class="section-label mb-0">Total score</div>
+                        <div class="leaderboard-score m-0" id="profileScore">0<span>pts</span></div>
+                    </div>
+                    <p class="section-label mb-2">Point history</p>
+                    <div id="profileEvents"></div>
                 </div>
             </div>
         </div>

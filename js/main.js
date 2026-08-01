@@ -1,62 +1,95 @@
 import { initHome } from './home.js';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { auth } from './config.js';
+import { auth, familyName } from './config.js';
 import { initIssues, cleanupIssues } from './issues.js';
 import { initCalendar, cleanupCalendar, refreshCalendar } from './calendar.js';
 import { initStock, cleanupStock } from './stock.js';
+import { initWeather, refreshWeatherView, cleanupWeather } from './weather.js';
 
-
+const SECTION_GROUPS = {
+    home: null,
+    calendar: 'stay',
+    weather: 'stay',
+    stock: 'stay',
+    issues: 'family',
+    gallery: 'family',
+    leaderboard: 'family'
+};
 
 // DOM ELEMENTS
 const loginScreen = document.getElementById('login-screen');
 const dashboard = document.getElementById('dashboard');
 
+function setActiveNav(section) {
+    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.dropdown-item').forEach(n => n.classList.remove('active'));
+
+    const group = SECTION_GROUPS[section];
+    if (group) {
+        document.querySelector(`[data-nav-group="${group}"]`)?.classList.add('active');
+        document.querySelector(`.dropdown-item[data-section="${section}"]`)?.classList.add('active');
+    } else {
+        document.querySelector(`.nav-link[data-section="${section}"]`)?.classList.add('active');
+    }
+}
+
+function showSection(section) {
+    if (!section) return;
+    setActiveNav(section);
+
+    document.querySelectorAll('.dashboard-section').forEach(s => s.classList.add('d-none'));
+    const targetSection = document.getElementById(`${section}-section`);
+    if (!targetSection) return;
+
+    targetSection.classList.remove('d-none');
+    if (section === 'calendar') refreshCalendar();
+    if (section === 'weather') refreshWeatherView();
+}
+
 // AUTH LISTENER
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // LOGGED IN
-        if(loginScreen) loginScreen.classList.add('d-none');
-        if(dashboard) dashboard.classList.remove('d-none');
+        if (loginScreen) loginScreen.classList.add('d-none');
+        if (dashboard) dashboard.classList.remove('d-none');
         const userDisplay = document.getElementById('user-display-email');
-        if(userDisplay) userDisplay.textContent = user.email;
-        
-        // ... inside the if(user) block ...
+        if (userDisplay) userDisplay.textContent = familyName(user.email);
+
         initIssues(user);
         initCalendar(user);
         initStock(user);
-        initHome(user); // <--- Add this line
-        
+        initHome(user);
+        initWeather();
     } else {
-        // LOGGED OUT
-        if(loginScreen) loginScreen.classList.remove('d-none');
-        if(dashboard) dashboard.classList.add('d-none');
-        
-        // Cleanup Modules
+        if (loginScreen) loginScreen.classList.remove('d-none');
+        if (dashboard) dashboard.classList.add('d-none');
+
         cleanupIssues();
         cleanupCalendar();
         cleanupStock();
+        cleanupWeather();
     }
 });
 
 // LOGIN
 document.getElementById('login-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    try { 
-        await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); 
-    } catch (error) { 
-        // Change this:
-        // alert("Login Failed: " + error.message);
-
-        // To this:
+    try {
+        await signInWithEmailAndPassword(
+            auth,
+            document.getElementById('loginEmail').value,
+            document.getElementById('loginPassword').value
+        );
+    } catch (error) {
+        const message = error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found'
+            ? 'Incorrect email or password.'
+            : (error.message || 'Something went wrong.');
         Swal.fire({
-        title: 'Login Failed',
-        text: error.message,
-        icon: 'error',
-        confirmButtonColor: '#1a1a1a', 
-        confirmButtonText: 'Try Again',
-        customClass: {
-            popup: 'glass-panel' 
-        }
+            title: 'Login Failed',
+            text: message,
+            icon: 'error',
+            confirmButtonColor: '#1f3d32',
+            confirmButtonText: 'Try Again',
+            customClass: { popup: 'glass-panel' }
         });
     }
 });
@@ -65,44 +98,29 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
 document.getElementById('logout-button')?.addEventListener('click', () => signOut(auth));
 
 // NAVIGATION
-document.querySelectorAll('.nav-link').forEach(link => {
+document.querySelectorAll('[data-section]').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
-        
-        // Update Tabs
-        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-        link.classList.add('active');
-        
-        // Update Sections
-        document.querySelectorAll('.dashboard-section').forEach(s => s.classList.add('d-none'));
-        const targetId = link.dataset.section + '-section';
-        const targetSection = document.getElementById(targetId);
-        
-        if(targetSection) {
-            targetSection.classList.remove('d-none');
-            // Specific fix for calendar rendering issues when hidden
-            if(targetId === 'calendar-section') refreshCalendar();
-        }
+        showSection(link.dataset.section);
     });
 });
 
-// Add this helper to close navbar on click
+// Close mobile navbar on link click / outside tap
 document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link, .navbar-nav .dropdown-item');
     const navCollapse = document.getElementById('navbarNav');
-    const bsCollapse = new bootstrap.Collapse(navCollapse, {toggle: false});
+    if (!navCollapse || typeof bootstrap === 'undefined') return;
+
+    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(navCollapse, { toggle: false });
 
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            if (navCollapse.classList.contains('show')) {
-                bsCollapse.hide();
-            }
+            if (navCollapse.classList.contains('show') && link.dataset.section) bsCollapse.hide();
         });
     });
-    
-    // Also close if clicking outside
+
     document.addEventListener('click', (e) => {
-        if (!navCollapse.contains(e.target) && navCollapse.classList.contains('show')) {
+        if (!navCollapse.contains(e.target) && !e.target.closest('.navbar-toggler') && navCollapse.classList.contains('show')) {
             bsCollapse.hide();
         }
     });
@@ -113,15 +131,15 @@ window.openLightbox = (src, caption) => {
     const lightbox = document.getElementById('lightbox');
     const img = document.getElementById('lightbox-img');
     const cap = document.getElementById('lightbox-caption');
-    
-    if(lightbox && img) {
+
+    if (lightbox && img) {
         img.src = src;
-        if(cap) cap.textContent = caption || "";
+        if (cap) cap.textContent = caption || '';
         lightbox.classList.add('active');
     }
 };
 
 window.closeLightbox = () => {
     const lightbox = document.getElementById('lightbox');
-    if(lightbox) lightbox.classList.remove('active');
+    if (lightbox) lightbox.classList.remove('active');
 };
