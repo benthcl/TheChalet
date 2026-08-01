@@ -114,6 +114,29 @@ export function familyName(email) {
     return FAMILY_NAME_MAP[local] || local;
 }
 
+/**
+ * One stable email per person for leaderboard / scoring.
+ * Merges Susie_Pihouee@… with susie_pihouee@gmail.com, etc.
+ */
+export function canonicalFamilyEmail(email) {
+    if (!email || isExcludedEmail(email)) return null;
+    const lower = normalizeEmail(email);
+    const local = lower.split('@')[0];
+
+    const fromList = (FAMILY_EMAIL_LIST || []).find(e => {
+        const n = normalizeEmail(e);
+        return n === lower || n.split('@')[0] === local;
+    });
+    if (fromList) return normalizeEmail(fromList);
+
+    if (FAMILY_NAME_MAP[lower]) return lower;
+    if (FAMILY_NAME_MAP[local]) {
+        const gmail = `${local}@gmail.com`;
+        return FAMILY_NAME_MAP[gmail] ? gmail : local;
+    }
+    return lower;
+}
+
 export function getNotifyEmails() {
     return [...new Set((FAMILY_EMAIL_LIST || []).map(normalizeEmail).filter(e => e && !isExcludedEmail(e)))];
 }

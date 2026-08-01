@@ -1,5 +1,5 @@
 import { collection, query, orderBy, onSnapshot, doc, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { db, ADMIN_EMAILS, FAMILY_EMAIL_LIST, LEADERBOARD_SCORING_LIVE, LEADERBOARD_SCORE_FROM, familyName, isKnownFamily, isExcludedEmail } from './config.js';
+import { db, ADMIN_EMAILS, FAMILY_EMAIL_LIST, LEADERBOARD_SCORING_LIVE, LEADERBOARD_SCORE_FROM, familyName, isKnownFamily, isExcludedEmail, canonicalFamilyEmail } from './config.js';
 import {
     SUPPLY_KEYS, CHECK_KEYS, supplyLabel, checkLabel,
     countMissingSupplies, countFailedChecks
@@ -85,8 +85,9 @@ function resolvedDay(issue) {
 
 function findHandoverForBooking(booking, handovers) {
     const graceEnd = addDays(booking.endDate, 2);
+    const bookerKey = canonicalFamilyEmail(booking.userEmail);
     const matches = handovers.filter(h => {
-        if (h.userEmail !== booking.userEmail) return false;
+        if (canonicalFamilyEmail(h.userEmail) !== bookerKey) return false;
         const day = handoverDay(h);
         if (!day) return false;
         return day >= booking.startDate && day <= graceEnd;
@@ -106,9 +107,11 @@ function pushEvent(player, event) {
 
 function ensurePlayer(map, email) {
     if (!email || isExcludedEmail(email) || !isKnownFamily(email)) return null;
-    if (!map[email]) {
-        map[email] = {
-            email,
+    const key = canonicalFamilyEmail(email);
+    if (!key) return null;
+    if (!map[key]) {
+        map[key] = {
+            email: key,
             score: 0,
             missedHandovers: 0,
             perfectExits: 0,
@@ -119,7 +122,7 @@ function ensurePlayer(map, email) {
             events: []
         };
     }
-    return map[email];
+    return map[key];
 }
 
 function buildLeaderboardMap() {
@@ -127,12 +130,13 @@ function buildLeaderboardMap() {
     const today = todayStr();
     const scoreFrom = LEADERBOARD_SCORE_FROM || today;
 
-    // Seed known family emails so the board isn't empty while scoring is off
-    [...ADMIN_EMAILS, ...FAMILY_EMAIL_LIST, 'maxthomasclubb@gmail.com'].forEach(email => ensurePlayer(map, email));
+    // Seed known family once each (canonical email) so the board isn't empty
+    [...ADMIN_EMAILS, ...FAMILY_EMAIL_LIST].forEach(email => ensurePlayer(map, email));
     leaderboardState.bookings.forEach(b => ensurePlayer(map, b.userEmail));
     leaderboardState.handovers.forEach(h => ensurePlayer(map, h.userEmail));
     leaderboardState.issues.forEach(i => {
         ensurePlayer(map, i.userEmail);
+        ensurePlayer(map, i.resolvedByEmail);
         (i.votedBy || []).forEach(e => ensurePlayer(map, e));
         (i.downvotedBy || []).forEach(e => ensurePlayer(map, e));
     });
