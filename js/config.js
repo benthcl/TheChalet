@@ -24,6 +24,8 @@ export const storage = getStorage(app);
 const FAMILY_NAME_MAP = {
     'alexpihouee94': 'Alex',
     'alexpihouee94@gmail.com': 'Alex',
+    'danielpihouee': 'Dan',
+    'danielpihouee@outlook.fr': 'Dan',
     'englishcentroadvance': 'Sal',
     'englishcentroadvance@gmail.com': 'Sal',
     'jat709': 'Jen',
@@ -37,7 +39,9 @@ const FAMILY_NAME_MAP = {
     'thomasclubbben': 'Ben',
     'thomasclubbben@gmail.com': 'Ben',
     'maxthomasclubb': 'Max',
-    'maxthomasclubb@gmail.com': 'Max'
+    'maxthomasclubb@gmail.com': 'Max',
+    'tpihouee': 'Tim',
+    'tpihouee@gmail.com': 'Tim'
 };
 
 /**
@@ -65,11 +69,13 @@ export const FAMILY_EMAIL_LIST = [
     'thomasclubbben@gmail.com',       // Ben
     'maxthomasclubb@gmail.com',       // Max
     'alexpihouee94@gmail.com',        // Alex
+    'danielpihouee@outlook.fr',       // Dan
     'englishcentroadvance@gmail.com', // Sal
     'jat709@gmail.com',               // Jen
     'micky.thomas@gmail.com',         // Micky
     'stephen.farmer@gmail.com',       // Stephen
-    'susie_pihouee@gmail.com'        // Susie
+    'susie_pihouee@gmail.com',        // Susie
+    'tpihouee@gmail.com'              // Tim
 ];
 
 /** @deprecated use FAMILY_EMAIL_LIST — kept so older imports keep working */
