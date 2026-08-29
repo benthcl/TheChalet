@@ -143,3 +143,12 @@ window.closeLightbox = () => {
     const lightbox = document.getElementById('lightbox');
     if (lightbox) lightbox.classList.remove('active');
 };
+
+// PWA — relative path works on localhost and GitHub Pages (/TheChalet/)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch((err) => {
+            console.warn('Service worker registration failed:', err);
+        });
+    });
+}
