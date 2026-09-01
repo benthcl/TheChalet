@@ -314,26 +314,36 @@ if (complaintForm) {
                 status: 'pending', timestamp: serverTimestamp(), userEmail: auth.currentUser.email
             });
 
-            await notifyIssue({
-                userEmail: auth.currentUser.email,
-                title,
-                category: cat,
-                description: desc,
-                isAnonymous: anon
-            });
-
             if (window.bootstrap) bootstrap.Modal.getInstance(document.getElementById('addIssueModal'))?.hide();
             complaintForm.reset();
             submitBtn.disabled = false;
             submitBtn.textContent = 'Publish Report';
-            Swal.fire({
-                title: 'Submitted!',
-                text: 'Your report is pending admin review.',
-                icon: 'success',
-                timer: 2200,
-                showConfirmButton: false,
-                customClass: { popup: 'glass-panel' }
-            });
+
+            try {
+                await notifyIssue({
+                    userEmail: auth.currentUser.email,
+                    title,
+                    category: cat,
+                    description: desc,
+                    isAnonymous: anon
+                });
+                Swal.fire({
+                    title: 'Submitted!',
+                    text: 'Your report is pending admin review.',
+                    icon: 'success',
+                    timer: 2200,
+                    showConfirmButton: false,
+                    customClass: { popup: 'glass-panel' }
+                });
+            } catch {
+                Swal.fire({
+                    title: 'Submitted',
+                    text: 'Saved, but the family email could not be queued.',
+                    icon: 'warning',
+                    confirmButtonColor: '#1f3d32',
+                    customClass: { popup: 'glass-panel' }
+                });
+            }
         } catch (error) {
             Swal.fire({
                 title: 'Upload Failed',
@@ -505,21 +515,30 @@ window.confirmResolution = async (id) => {
         resolutionConfirmedBy: auth.currentUser.email
     });
 
-    await notifyIssueResolved({
-        resolverEmail: data.resolvedByEmail,
-        title: data.title,
-        category: data.category,
-        note: data.resolutionNote || ''
-    });
-
-    Swal.fire({
-        title: 'Resolved!',
-        text: `Family email sent — ${familyName(data.resolvedByEmail)} gets the credit.`,
-        icon: 'success',
-        timer: 2400,
-        showConfirmButton: false,
-        customClass: { popup: 'glass-panel' }
-    });
+    try {
+        await notifyIssueResolved({
+            resolverEmail: data.resolvedByEmail,
+            title: data.title,
+            category: data.category,
+            note: data.resolutionNote || ''
+        });
+        Swal.fire({
+            title: 'Resolved!',
+            text: `Family email sent — ${familyName(data.resolvedByEmail)} gets the credit.`,
+            icon: 'success',
+            timer: 2400,
+            showConfirmButton: false,
+            customClass: { popup: 'glass-panel' }
+        });
+    } catch {
+        Swal.fire({
+            title: 'Resolved',
+            text: 'Saved, but the family email could not be queued.',
+            icon: 'warning',
+            confirmButtonColor: '#1f3d32',
+            customClass: { popup: 'glass-panel' }
+        });
+    }
 };
 
 window.rejectResolution = async (id) => {

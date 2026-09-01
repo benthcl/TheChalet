@@ -376,21 +376,31 @@ window.publishHandover = async () => {
             timestamp: serverTimestamp()
         };
         await addDoc(collection(db, 'handover_reports'), report);
-        await notifyHandover({
-            userEmail: currentUserEmail,
-            nextGuestNote: liveNote,
-            shoppingList: SUPPLY_KEYS.filter(k => currentHouseState.supplies?.[k] !== true).map(supplyLabel),
-            openChecks: CHECK_KEYS.filter(k => currentHouseState.checks?.[k] !== true).map(checkLabel),
-            laundryLeft: Boolean(currentHouseState.laundry)
-        });
-        Swal.fire({
-            title: 'Published!',
-            text: 'Handover report is live for the next guests.',
-            icon: 'success',
-            timer: 2200,
-            showConfirmButton: false,
-            customClass: { popup: 'glass-panel' }
-        });
+        try {
+            await notifyHandover({
+                userEmail: currentUserEmail,
+                nextGuestNote: liveNote,
+                shoppingList: SUPPLY_KEYS.filter(k => currentHouseState.supplies?.[k] !== true).map(supplyLabel),
+                openChecks: CHECK_KEYS.filter(k => currentHouseState.checks?.[k] !== true).map(checkLabel),
+                laundryLeft: Boolean(currentHouseState.laundry)
+            });
+            Swal.fire({
+                title: 'Published!',
+                text: 'Handover report is live for the next guests.',
+                icon: 'success',
+                timer: 2200,
+                showConfirmButton: false,
+                customClass: { popup: 'glass-panel' }
+            });
+        } catch {
+            Swal.fire({
+                title: 'Published',
+                text: 'Saved, but the family email could not be queued.',
+                icon: 'warning',
+                confirmButtonColor: '#1f3d32',
+                customClass: { popup: 'glass-panel' }
+            });
+        }
     } catch (error) {
         Swal.fire({
             title: 'Publish failed',

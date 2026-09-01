@@ -44,18 +44,11 @@ async function fetchUpcomingTrips(max = 6) {
 /**
  * Queue a family email via Firestore `mail` docs.
  * Needs Firebase Extension: Trigger Email from Firestore.
- *
- * During testing with a single address, the actor is still included
- * so you receive the message and can confirm delivery.
+ * Everyone on the notify list is included, including the person who triggered it.
+ * Throws if the mail doc cannot be written (callers should warn the user).
  */
-export async function notifyFamily({ subject, text, html, meta = {}, excludeEmail = null }) {
-    let recipients = resolveNotifyRecipients(getNotifyEmails());
-    if (!recipients.length) return;
-
-    // Only skip the actor when there are other people to notify
-    if (excludeEmail && recipients.length > 1) {
-        recipients = recipients.filter(e => e !== excludeEmail.toLowerCase());
-    }
+export async function notifyFamily({ subject, text, html, meta = {} }) {
+    const recipients = resolveNotifyRecipients(getNotifyEmails());
     if (!recipients.length) return;
 
     const finalSubject = applyDevSubject(subject);
@@ -79,6 +72,7 @@ export async function notifyFamily({ subject, text, html, meta = {}, excludeEmai
         });
     } catch (err) {
         console.warn('Could not queue family email:', err.message);
+        throw err;
     }
 }
 
@@ -97,8 +91,7 @@ export async function notifyBooking({ action, title, startDate, endDate, arrival
 
     await notifyFamily({
         ...mail,
-        meta: { type: 'booking', action, bookerEmail },
-        excludeEmail: bookerEmail
+        meta: { type: 'booking', action, bookerEmail }
     });
 }
 
@@ -115,8 +108,7 @@ export async function notifyHandover({ userEmail, nextGuestNote, shoppingList = 
 
     await notifyFamily({
         ...mail,
-        meta: { type: 'handover', userEmail },
-        excludeEmail: userEmail
+        meta: { type: 'handover', userEmail }
     });
 }
 
@@ -131,8 +123,7 @@ export async function notifyIssue({ userEmail, title, category, isAnonymous, des
 
     await notifyFamily({
         ...mail,
-        meta: { type: 'issue', userEmail, category },
-        excludeEmail: isAnonymous ? null : userEmail
+        meta: { type: 'issue', userEmail, category }
     });
 }
 
@@ -145,7 +136,6 @@ export async function notifyIssueResolved({ resolverEmail, title, category, note
         siteUrl: SITE_URL
     });
 
-    // Include the fixer — the email is validation for them, not just a heads-up for others.
     await notifyFamily({
         ...mail,
         meta: { type: 'issue_resolved', resolverEmail, category }

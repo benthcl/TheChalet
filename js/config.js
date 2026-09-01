@@ -60,7 +60,7 @@ export const ADMIN_EMAILS = [
 
 /**
  * Family email list — notified on chalet updates (bookings, handovers, issues).
- * The person who triggered the update is skipped when others are on the list.
+ * Everyone on the list is included, including the person who triggered the update.
  *
  * Sending requires Firebase Extension "Trigger Email from Firestore"
  * (collection id: mail) + Firestore rules allowing create on `mail`.

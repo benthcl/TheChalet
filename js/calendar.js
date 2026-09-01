@@ -220,35 +220,63 @@ if (bookingForm) {
                     ...payload,
                     updatedAt: serverTimestamp()
                 });
-                await notifyBooking({
-                    action: 'updated',
-                    ...payload,
-                    bookerEmail: auth.currentUser.email
-                });
+                bootstrap.Modal.getInstance(document.getElementById('addTripModal'))?.hide();
+                setBookingFormMode('create');
+                try {
+                    await notifyBooking({
+                        action: 'updated',
+                        ...payload,
+                        bookerEmail: auth.currentUser.email
+                    });
+                    Swal.fire({
+                        title: 'Updated!',
+                        text: 'Your trip changes are saved.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        customClass: { popup: 'glass-panel' }
+                    });
+                } catch {
+                    Swal.fire({
+                        title: 'Updated',
+                        text: 'Saved, but the family email could not be queued.',
+                        icon: 'warning',
+                        confirmButtonColor: '#1f3d32',
+                        customClass: { popup: 'glass-panel' }
+                    });
+                }
             } else {
                 await addDoc(collection(db, 'bookings'), {
                     ...payload,
                     userEmail: auth.currentUser.email,
                     timestamp: serverTimestamp()
                 });
-                await notifyBooking({
-                    action: 'booked',
-                    ...payload,
-                    bookerEmail: auth.currentUser.email
-                });
+                bootstrap.Modal.getInstance(document.getElementById('addTripModal'))?.hide();
+                setBookingFormMode('create');
+                try {
+                    await notifyBooking({
+                        action: 'booked',
+                        ...payload,
+                        bookerEmail: auth.currentUser.email
+                    });
+                    Swal.fire({
+                        title: 'Booked!',
+                        text: 'Your trip has been added to the calendar.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        customClass: { popup: 'glass-panel' }
+                    });
+                } catch {
+                    Swal.fire({
+                        title: 'Booked',
+                        text: 'Saved, but the family email could not be queued.',
+                        icon: 'warning',
+                        confirmButtonColor: '#1f3d32',
+                        customClass: { popup: 'glass-panel' }
+                    });
+                }
             }
-
-            bootstrap.Modal.getInstance(document.getElementById('addTripModal'))?.hide();
-            setBookingFormMode('create');
-
-            Swal.fire({
-                title: editId ? 'Updated!' : 'Booked!',
-                text: editId ? 'Your trip changes are saved.' : 'Your trip has been added to the calendar.',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false,
-                customClass: { popup: 'glass-panel' }
-            });
         } catch (error) {
             Swal.fire({
                 title: editId ? 'Update failed' : 'Booking failed',
