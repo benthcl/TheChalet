@@ -1,6 +1,12 @@
 import { collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { db, getNotifyEmails, familyName, EMAIL_FROM, EMAIL_REPLY_TO, SITE_URL } from './config.js';
 import {
+    resolveNotifyRecipients,
+    applyDevSubject,
+    isDevNotifyActive,
+    isDevMode
+} from './devMode.js';
+import {
     renderBookingEmail,
     renderHandoverEmail,
     renderIssueEmail,
@@ -43,7 +49,7 @@ async function fetchUpcomingTrips(max = 6) {
  * so you receive the message and can confirm delivery.
  */
 export async function notifyFamily({ subject, text, html, meta = {}, excludeEmail = null }) {
-    let recipients = getNotifyEmails();
+    let recipients = resolveNotifyRecipients(getNotifyEmails());
     if (!recipients.length) return;
 
     // Only skip the actor when there are other people to notify
@@ -52,18 +58,24 @@ export async function notifyFamily({ subject, text, html, meta = {}, excludeEmai
     }
     if (!recipients.length) return;
 
+    const finalSubject = applyDevSubject(subject);
+    const mailMeta = {
+        ...meta,
+        ...(isDevMode() ? { devMode: true, emailsToSelf: isDevNotifyActive() } : {})
+    };
+
     try {
         await addDoc(collection(db, 'mail'), {
             to: recipients,
             from: EMAIL_FROM,
             replyTo: EMAIL_REPLY_TO,
             message: {
-                subject,
+                subject: finalSubject,
                 text,
-                html: html || renderSimpleEmail({ subject, text, siteUrl: SITE_URL }).html
+                html: html || renderSimpleEmail({ subject: finalSubject, text, siteUrl: SITE_URL }).html
             },
             createdAt: serverTimestamp(),
-            meta
+            meta: mailMeta
         });
     } catch (err) {
         console.warn('Could not queue family email:', err.message);

@@ -5,6 +5,12 @@ import { initIssues, cleanupIssues } from './issues.js';
 import { initCalendar, cleanupCalendar, refreshCalendar } from './calendar.js';
 import { initStock, cleanupStock } from './stock.js';
 import { initWeather, refreshWeatherView, cleanupWeather } from './weather.js';
+import {
+    canUseDevMode,
+    getDevSettings,
+    setDevSettings,
+    isDevMode
+} from './devMode.js';
 
 const SECTION_GROUPS = {
     home: null,
@@ -19,6 +25,68 @@ const SECTION_GROUPS = {
 // DOM ELEMENTS
 const loginScreen = document.getElementById('login-screen');
 const dashboard = document.getElementById('dashboard');
+
+function syncDevModeUi(userEmail) {
+    const navItem = document.getElementById('dev-mode-nav-item');
+    const btn = document.getElementById('dev-mode-button');
+    const banner = document.getElementById('dev-mode-banner');
+    const admin = canUseDevMode(userEmail);
+
+    if (navItem) navItem.classList.toggle('d-none', !admin);
+    if (!admin) {
+        if (banner) banner.classList.add('d-none');
+        if (btn) btn.classList.remove('is-on');
+        return;
+    }
+
+    const on = isDevMode();
+    if (btn) {
+        btn.classList.toggle('is-on', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    if (banner) banner.classList.toggle('d-none', !on);
+}
+
+async function openDevModePanel() {
+    const settings = getDevSettings();
+    const result = await Swal.fire({
+        title: 'Developer mode',
+        html: `
+            <p class="text-start small text-secondary mb-3">
+                Only affects this browser. Family members are unchanged.
+            </p>
+            <label class="d-flex align-items-center gap-2 text-start mb-2">
+                <input type="checkbox" id="devEnabled" ${settings.enabled ? 'checked' : ''}>
+                <span><strong>Developer mode</strong> on</span>
+            </label>
+            <label class="d-flex align-items-center gap-2 text-start mb-2">
+                <input type="checkbox" id="devEmailsToSelf" ${settings.emailsToSelf ? 'checked' : ''}>
+                <span>Emails to me only</span>
+            </label>
+            <label class="d-flex align-items-center gap-2 text-start mb-3">
+                <input type="checkbox" id="devSubjectPrefix" ${settings.subjectPrefix ? 'checked' : ''}>
+                <span>Prefix subjects with [DEV]</span>
+            </label>
+            <p class="text-start small text-secondary mb-0">
+                Live data still writes to Firebase (trips, board, stock).
+            </p>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#1f3d32',
+        customClass: { popup: 'glass-panel' },
+        preConfirm: () => ({
+            enabled: document.getElementById('devEnabled')?.checked === true,
+            emailsToSelf: document.getElementById('devEmailsToSelf')?.checked === true,
+            subjectPrefix: document.getElementById('devSubjectPrefix')?.checked === true
+        })
+    });
+
+    if (!result.isConfirmed || !result.value) return;
+    setDevSettings(result.value);
+    syncDevModeUi(auth.currentUser?.email);
+}
 
 function setActiveNav(section) {
     document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
@@ -54,6 +122,8 @@ onAuthStateChanged(auth, (user) => {
         const userDisplay = document.getElementById('user-display-email');
         if (userDisplay) userDisplay.textContent = familyName(user.email);
 
+        syncDevModeUi(user.email);
+
         initIssues(user);
         initCalendar(user);
         initStock(user);
@@ -62,6 +132,8 @@ onAuthStateChanged(auth, (user) => {
     } else {
         if (loginScreen) loginScreen.classList.remove('d-none');
         if (dashboard) dashboard.classList.add('d-none');
+
+        syncDevModeUi(null);
 
         cleanupIssues();
         cleanupCalendar();
@@ -96,6 +168,11 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
 
 // LOGOUT
 document.getElementById('logout-button')?.addEventListener('click', () => signOut(auth));
+
+document.getElementById('dev-mode-button')?.addEventListener('click', () => {
+    if (!canUseDevMode(auth.currentUser?.email)) return;
+    openDevModePanel();
+});
 
 // NAVIGATION
 document.querySelectorAll('[data-section]').forEach(link => {

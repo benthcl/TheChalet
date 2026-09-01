@@ -134,6 +134,42 @@ h1, h2, h3, h4, .navbar-brand, .fc-toolbar-title, #welcome-title {
     vertical-align: 0.15em;
 }
 
+.dev-mode-btn {
+    border: 1px solid rgba(31, 61, 50, 0.2);
+    color: var(--muted);
+    background: transparent;
+    font-weight: 600;
+}
+.dev-mode-btn:hover {
+    background: rgba(47, 92, 74, 0.08);
+    color: var(--pine);
+}
+.dev-mode-btn.is-on {
+    background: var(--pine);
+    border-color: var(--pine);
+    color: #fff;
+}
+
+.dev-mode-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem 0.75rem;
+    margin: 0 20px 0;
+    padding: 0.55rem 1rem;
+    border-radius: 12px;
+    background: linear-gradient(145deg, var(--pine-mid), var(--pine));
+    color: #fffcf8;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.dev-mode-banner-hint {
+    font-weight: 400;
+    opacity: 0.8;
+    font-size: 0.8rem;
+}
+
 .chalet-dropdown {
     border: 1px solid rgba(31, 61, 50, 0.08);
     border-radius: 16px;

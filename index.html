@@ -67,12 +67,23 @@
                                 <li><a class="dropdown-item" href="#" data-section="leaderboard"><i class="bi bi-trophy me-2"></i>Leaderboard</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item d-none" id="dev-mode-nav-item">
+                            <button type="button" id="dev-mode-button" class="btn btn-sm rounded-pill px-3 dev-mode-btn" title="Developer mode">
+                                <i class="bi bi-tools me-1"></i>Dev
+                            </button>
+                        </li>
                         <li class="nav-item d-none d-lg-block text-secondary small ps-lg-2" id="user-display-email"></li>
                         <li class="nav-item"><button id="logout-button" class="btn btn-outline-dark rounded-pill px-4 btn-sm">Logout</button></li>
                     </ul>
                 </div>
             </div>
         </nav>
+
+        <div id="dev-mode-banner" class="dev-mode-banner d-none" role="status">
+            <i class="bi bi-tools me-2"></i>
+            <span>Developer mode — family emails muted</span>
+            <span class="dev-mode-banner-hint">Live data still writes to Firebase</span>
+        </div>
 
         <main class="flex-grow-1 p-3 p-md-5">
             <div class="container-xl">
